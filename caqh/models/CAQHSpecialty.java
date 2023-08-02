@@ -1,0 +1,10 @@
+package com.credv3.caqh.models;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Data;
+
+public @Data class CAQHSpecialty {
+	@JsonProperty("SpecialtyName")
+	private String SpecialtyName;
+}
