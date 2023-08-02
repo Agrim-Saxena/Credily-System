@@ -1,0 +1,311 @@
+<div class="container-fluid">
+    <div class="main">
+        <div class="roletitlemain">
+            <div class="breadcrumb-bx">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Expirables</a> <i class="fa-solid fa-chevron-right"></i></li>
+                        <li class="breadcrumb-item active pointer">
+                            All Provider By Facility
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="usertablemain">
+            <div class="row justify-content-between align-items-center" *ngIf="enableSearch">
+                <div class="col-lg-3 px-2">
+                    <div class="form-group usrtblesearch position-relative">
+                        <input type="text" placeholder="Search Provider Name, Specialty etc" class="form-control" [(ngModel)]="facilityDatabaseHelper.search" (ngModelChange)="this.facilitySearch.next($event)"/>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                </div>
+                <div class="col-lg-3 px-2">
+                    <div class="form-group usrtbleselect position-relative">
+                        <angular2-multiselect id="taxIdSelectBox" name="taxIdSelectBox" [data]="providerAddressList" [settings]="dropdownSettingsAddress" [(ngModel)]="selectedProviderAddress" #clientSelectList="ngModel"  (keyup)="onSearch($event)" (ngModelChange)="selectAddress($event)">
+                        </angular2-multiselect>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expiretblactnbtns" *ngIf="enableSearch">
+                <div class="tlbctnbtnsinner d-flex align-items-center">
+                    <p class="mb-0 bg-success pointer text-white" (click)="toggleCartFunc('upToDate')">
+                        <i class="bi bi-check2"></i> All Credentials Up To Date
+                        <span>{{uptoDateCount}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                    <p class="mb-0 bg-warning pointer text-black" (click)="toggleCartFunc('aboutToExpire')">
+                        <i class="bi bi-exclamation-triangle"></i> At least one credential expiring in 90 days
+                        <span>{{expiringSoonCount}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                    <p class="mb-0 bg-danger pointer text-white" (click)="toggleCartFunc('expired')">
+                        <i class="bi bi-x-circle"></i> At least one credential expired 
+                        <span>{{expiredCount}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                </div>
+            </div>
+            <div class="usertable mt-3 ">
+                
+                <div class="usertableinner no-wrap table-responsive">
+                    <table class="table">
+                        <thead  *ngIf="enableSearch">
+                            <tr>
+                                <th style="width:15%">
+                                    <span *ngIf="!nameFilterToggle" (click)="filterByName()" style="cursor: pointer;">
+                                        Provider Name 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedProvider.length == 0"></i>
+                                        <i *ngIf="selectedProvider.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedProvider.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="nameFilterToggle" id="taxIdSelectBox" name="taxIdSelectBox" [data]="providerNameList" [settings]="dropdownSettingsName" [(ngModel)]="selectedProvider" #taxIdSelectBox="ngModel" (onClose)="getAllFacility()" required>
+                                    </angular2-multiselect>
+                                </th>
+                                <th style="width: 10%;">
+                                    <span *ngIf="!specialtyFilterToggle" (click)="filterBySpecialty()" style="cursor: pointer;">
+                                        Specilaty 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedSpecialty.length == 0"></i>
+                                        <i *ngIf="selectedSpecialty.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedSpecialty.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="specialtyFilterToggle" id="taxIdSelectBox" name="taxIdSelectBox" [data]="specialtyList" [settings]="dropdownSettingsSpecialty" [(ngModel)]="selectedSpecialty" #taxIdSelectBox="ngModel" (ngModelChange)="selectSpecialty($event)"
+                                        required>
+                                    </angular2-multiselect>
+                                </th>
+                                <th style="width: 10%;text-align: center;">Location</th>
+                                <th style="width: 10%;text-align: center;">NPI Number</th>
+                                <th style="width: 10%;text-align: center;">Phone</th>
+                                <th style="width: 15%;text-align: center;">Email</th>
+                                <th style="width: 10%;">
+                                    <span *ngIf="!stateFilterToggle" (click)="filterByState()" style="cursor: pointer;">
+                                        State 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedStateName.length == 0"></i>
+                                        <i *ngIf="selectedStateName.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedStateName.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="stateFilterToggle" id="stateSelectBox" name="stateSelectBox" [data]="stateNameList" [settings]="dropdownSettingsStateName" [(ngModel)]="selectedStateName" #stateSelectBox="ngModel" (onClose)="getAllFacility()" required>
+                                    </angular2-multiselect>
+                                </th>
+                                <th style="width: 7%;">
+                                    <span *ngIf="!statusFilterToggle" (click)="filterByStatus()" style="cursor: pointer;">
+                                        Status 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedStatus.length == 0"></i>
+                                        <i *ngIf="selectedStatus.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedStatus.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="statusFilterToggle" id="stateSelectBox" name="stateSelectBox" [data]="statusList" [settings]="dropdownSettingsStatus" [(ngModel)]="selectedStatus" #stateSelectBox="ngModel" (ngModelChange)="selectStatus($event)" required>
+                                    </angular2-multiselect>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let obj of facilityList">
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0 pointer">
+                                            <span [ngClass]="{'statusdotgreen':obj.provider.expirableStatus==Constant.up_To_Date, 'statusdotyellow':obj.provider.expirableStatus==Constant.about_To_Expire ,'statusdotred':obj.provider.expirableStatus==Constant.expired}"></span> {{obj.provider.firstName}} {{obj.provider.lastName}}
+                                            {{obj.provider.firstName}} {{obj.provider.lastName}}
+                                            <!-- [routerLink]="Route.EXPIRABLE_PROVIDER_DASHBOARD" [queryParams]="{uuid:obj.provider.uuid} -->
+                                            
+                                        </p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0 pointer">
+                                            {{obj.provider.specialty}}
+                                        </p>
+                                    </div>
+                                </td>
+                                <td style="text-align: center">
+                                    <div class="tableinfo">
+                                        <div class="mb-0 text-center">
+                                            <!-- <a class="text-primary" data-bs-toggle="modal" data-bs-target="#showImageModal" rel="noopener noreferrer" *ngIf="obj.monitoringStatus != Constant.MONITORING_STATUS_PENDING && !Constant.EMPTY_STRINGS.includes(obj.screenshot)">
+                                                <i class="bi bi-eye pointer" (click)="selectedImage = obj.screenshot"></i>
+                                            </a> -->
+                                            <a>{{obj.provider.addressLine1}}</a>
+
+                                            <!-- <div class="spinner-border text-warning" role="status" style="width:20px;height: 20px;" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div> -->
+
+                                            <!-- <i class="bi bi-eye-slash" *ngIf="obj.monitoringStatus != Constant.MONITORING_STATUS_PENDING && Constant.EMPTY_STRINGS.includes(obj.screenshot)"></i> -->
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <span class="badge-grey textWrap">{{obj.provider.npi}}</span>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.phone | mask:'(000)-000-0000' }}</p>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.email}}</p>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="tableinfo">
+                                        <p class="mb-0">{{obj.stateName}}</p>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="position-relative tableinfo">
+                                        <div class="statusdesc">
+                                            <span [ngClass]="{'statusdotgreen':obj.provider.expirableStatus==Constant.up_To_Date, 'statusdotyellow':obj.provider.expirableStatus==Constant.about_To_Expire ,'statusdotred':obj.provider.expirableStatus==Constant.expired}"></span> 
+                                            last updated : 
+                                            <span *ngIf="!Constant.EMPTY_STRINGS.includes(obj.updatedDate)">{{obj.updatedDate | date:'MM-dd-yyyy hh:mm' : 'EST'}} (EST)</span>
+                                            <span *ngIf="Constant.EMPTY_STRINGS.includes(obj.updatedDate)">Not Update Yet!</span>
+                                        </div>
+                                        <p class="mb-0 position-relative textWrap">
+                                            <span [ngClass]="{'statusdotgreen':obj.provider.expirableStatus==Constant.up_To_Date, 'statusdotyellow':obj.provider.expirableStatus==Constant.about_To_Expire ,'statusdotred':obj.provider.expirableStatus==Constant.expired}"></span> 
+                                            last updated : 
+                                            <span *ngIf="!Constant.EMPTY_STRINGS.includes(obj.updatedDate)">{{obj.updatedDate | date:'MM-dd-yyyy hh:mm' : 'EST'}} (EST)</span>
+                                            <span *ngIf="Constant.EMPTY_STRINGS.includes(obj.updatedDate)">Not Update Yet!</span>
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    <app-circular-loader *ngIf="loadingToggle"></app-circular-loader>
+                    <div class="nodatafoundbox text-center" *ngIf="!loadingToggle && facilityList.length == 0">
+                        <img src="assets/images/allexpirable.svg" style="width: 25%; margin-right: 90px; margin-top: 90px;" alt="no data found"/>
+                        <h6 class="mt-4 text-muted">No data found</h6>
+                    </div>
+                </div>
+
+                <div class="paginationmain" *ngIf="totalFacilityItems>0 && !loadingToggle">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <p class="currentshowing mb-0">
+                            Showing <span>{{facilityList.length}}</span> of <span>{{totalFacilityItems}}</span>
+                        </p>
+                        <div class="col-lg-6">
+                            <div class="card-body d-flex justify-content-end">
+                                <ngb-pagination [collectionSize]="totalFacilityItems" [rotate]="true" (pageChange)="pageChanged($event)" [pageSize]="facilityDatabaseHelper.itemsPerPage" [(page)]="facilityDatabaseHelper.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                                </ngb-pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- show image modal -->
+<div class="modal blur-bg-2" id="showImageModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:80%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">On-going Monitoring Snapshot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" style="overflow: scroll;min-height: 350px;">
+                <!-- <img [src]="selectedImage" alt="" /> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modals -->
+<div class="expiredmain" [ngClass]="{'expiredmainslide':cartToggle==true}">
+    <div class="expiredinner">
+        <div class="backbtn">
+            <i class="bi bi-chevron-left" (click)="togglecloseCartFunc()"></i>
+        </div>
+        <div class="expiredinnertiitle">
+            <h4 *ngIf="facilityType == Constant.up_To_Date"><span class="statusdotgreen"></span>Up-To Date</h4>
+            <h4 *ngIf="facilityType == Constant.about_To_Expire"><span class="statusdotyellow"></span>Expiring Soon</h4>
+            <h4 *ngIf="facilityType == Constant.expired"><span class="statusdotred"></span>Expired</h4>
+        </div>
+        <div class="expiredinnertable">
+
+            <app-circular-loader *ngIf="filterloadingToggle"></app-circular-loader>
+            <div class="empty-notific" *ngIf="!filterloadingToggle && filterFacilityList.length == 0">
+                
+                <div class="empty-notificinner">
+                    <div class="empty-notificinnerimg">
+                        <img src="assets/images/allexpirable.svg" alt="" style="width:80%">
+                    </div>
+                    <h6 class="mt-4 text-muted">No data found</h6>
+                </div>
+            </div>
+            <div class="usertableinner table-responsive" style="height: 450px; overflow-y: scroll;" *ngIf="!filterloadingToggle && filterFacilityList.length > 0">
+                <table class="table"  *ngIf="!filterloadingToggle && filterFacilityList.length > 0">
+                    <!-- *ngIf="!filterloadingToggle && filteredMonitoringList.length > 0" -->
+                    <thead>
+                        <tr>
+                            <th style="width: 30%">Provider Name <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90"></i></th>
+                            <th style="width: 20%">Credential</th>
+                            <th style="width: 20%">Expiration Date</th>
+                            <th style="width: 10%">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let obj of filterFacilityList; let i =index ">
+
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0 pointer">
+                                        <!-- <span class="statusdotred"></span> -->
+                                        <span [ngClass]="{'statusdotgreen':obj.expirationCount==0,'statusdotyellow':obj.expirationCount==1,'statusdotred':obj.expirationCount==2}"></span> {{obj.provider.firstName}} {{obj.provider.lastName}}
+                                    </p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0">{{obj.docType}}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0">{{obj.expirationDate | date : "MM-dd-yyyy"}}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actiontable d-flex align-items-center">
+                                    <span class="text-primary pointer">Manage</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="paginationmain" *ngIf="filterFacilityList.length!=0"  >
+                 
+                <div class="d-flex align-items-center justify-content-between">
+                    <p class="currentshowing mb-0">
+                        Showing <span>{{filterFacilityList.length}}</span> of <span>{{totalFilterFacilityItems}}</span>
+                    </p>
+                    <div class="col-lg-6">
+                        <div class="card-body d-flex justify-content-end">
+                            <ngb-pagination [collectionSize]="totalFilterFacilityItems" [rotate]="true" (pageChange)="filteredPageChanged($event)" [pageSize]="filterFacilityDatabaseHelper.itemsPerPage" [(page)]="filterFacilityDatabaseHelper.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,26 @@
+<div class="row" style="margin-bottom: 15px;">
+    <div class="{{stateCodeClass}}">
+        <!-- <div> -->
+        <label for="updateStateCode"  class="form-label {{stateCodeLabelClass}}">{{stateCodeDynamic}}</label>
+        <angular2-multiselect name="updateStateCode" [settings]="dropdownSettingsStateCode" [data]="stateCodeList" #stateCodeSelect="ngModel" [(ngModel)]="updatedStateCode" (ngModelChange)="selectStateCode($event)">
+        </angular2-multiselect>
+        <!-- </div> -->
+    </div>
+    <!--end col-->
+    <div class="{{stateNameClass}}">
+        <!-- <div> -->
+        <label for="updateStateName" class="form-label {{stateNameLabelClass}}">{{stateNameDynamic}}<sup class="{{requiredClass}}">*</sup></label>
+        <angular2-multiselect name="updateStateName" required [settings]="dropdownSettingsStateName" [data]="stateNameList" #stateNameSelect="ngModel" [(ngModel)]="updatedStateName" (ngModelChange)="selectStateName($event)">
+        </angular2-multiselect>
+        <!-- <small *ngIf="(updateStateName.errors?.required)" style="color: red;">State Name is required</small> -->
+        <!-- </div> -->
+    </div>
+
+    <div class="{{cityClass}}">
+        <!-- <div> -->
+        <label for="updateStateCode" class="form-label {{cityNameLabelClass}}">{{cityNameDynamic}}</label>
+        <angular2-multiselect name="cityNameSelect" #cityNameSelect="ngModel" [settings]="dropdownSettingsCityName" [data]="cities" [(ngModel)]="updatedCityName" (ngModelChange)="selectCityName($event)">
+        </angular2-multiselect>
+        <!-- </div> -->
+    </div>
+</div>

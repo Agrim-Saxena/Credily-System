@@ -1,0 +1,50 @@
+
+
+.errorboxmain {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background-color: #fff;
+    padding: 30px 15px 30px;
+    margin-bottom: 15px;
+    min-height: 60vh;
+  }
+  .errorboxinner {
+    text-align: center;
+  }
+  .errorboxplaceholder {
+    width: 400px;
+    margin: 0 auto 20px;
+  }
+  .errorboxplaceholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .errorboxinner h1 {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 30px;
+    color: #444444;
+    margin-bottom: 15px;
+  }
+  .errorboxinner p {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 22px;
+    color: #828282;
+    margin-bottom: 20px;
+  }
+  .errorboxinner a {
+    background-color: #444444;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 15px;
+      text-align: center;
+      color: #FFFFFF;
+      padding: 8px 15px;
+      border-radius: 2px;
+      text-decoration: none;
+  }
+  

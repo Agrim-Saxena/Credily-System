@@ -1,0 +1,332 @@
+<div class="container-fluid">
+    <div class="main">
+        <div class="roletitlemain">
+            <div class="breadcrumb-bx">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Expirables</a> <i class="fa-solid fa-chevron-right"></i></li>
+                        <li class="breadcrumb-item active pointer">
+                            All Monitoring by Provider
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="usertablemain">
+            <div class="row justify-content-between align-items-center" *ngIf="enableSearch">
+                <div class="col-lg-3 px-2">
+                    <div class="form-group usrtblesearch position-relative">
+                        <input type="text" placeholder="Search Provider Name, Specialty etc" class="form-control" [(ngModel)]="monitoringEntity.databaseHelper.search" (ngModelChange)="this.monitoringSearch.next($event)" />
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expiretblactnbtns" *ngIf="enableSearch">
+                <div class="tlbctnbtnsinner d-flex align-items-center">
+                    <p class="mb-0 bg-success pointer text-white" (click)="toggleCartFunc(Constant.MONITORING_STATUS_NOT_FOUND)">
+                        <i class="bi bi-check2"></i> Clear
+                        <span>{{notFound}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                    <p class="mb-0 bg-warning pointer text-black" (click)="toggleCartFunc(Constant.MONITORING_STATUS_PENDING)">
+                        <i class="bi bi-exclamation-triangle"></i> Not Monitoring
+                        <span>{{pending}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                    <p class="mb-0 bg-danger pointer text-white" (click)="toggleCartFunc(Constant.MONITORING_STATUS_FOUND)">
+                        <i class="bi bi-x-circle"></i> Alert
+                        <span>{{found}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                </div>
+            </div>
+            <div class="usertable mt-3 ">
+                <app-circular-loader *ngIf="loadingToggle"></app-circular-loader>
+                <div class="nodatafoundbox text-center" *ngIf="!loadingToggle && monitoringList.length==0">
+                    <img src="assets/images/allexpirable.svg" style="width: 20%; margin-right: 90px; margin-top: 90px;" alt="no data found" />
+                    <h6 class="mt-4 text-muted">No data found</h6>
+                </div>
+                <div class="usertableinner no-wrap table-responsive" *ngIf="monitoringList.length>0 && !loadingToggle">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">Provider Name</th>
+                                <th style="width: 10%;text-align: center;">Database</th>
+                                <th style="width: 5%">Snapshot</th>
+                                <th style="width: 10%;text-align: center;">Specialty</th>
+                                <th style="width: 10%;text-align: center;">NPI Number</th>
+                                <th style="width: 10%;text-align: center;">Phone</th>
+                                <th style="width: 15%;text-align: center;">Email</th>
+                                <th style="width: 10%;text-align: center;">Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let obj of monitoringList">
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0 pointer" [routerLink]="Route.EXPIRABLE_PROVIDER_DASHBOARD" [queryParams]="{uuid:obj.provider.uuid}">
+                                            <span [ngClass]="{'statusdotgreen':obj.provider.onGoingMonitoringStatus==Constant.up_To_Date, 'statusdotyellow':obj.provider.onGoingMonitoringStatus==Constant.about_To_Expire ,'statusdotred':obj.provider.onGoingMonitoringStatus==Constant.expired}"></span> {{obj.provider.firstName}} {{obj.provider.lastName}}
+                                        </p>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.database}}</p>
+                                    </div>
+                                </td>
+                                <td style="text-align: center">
+                                    <div class="tableinfo">
+                                        <div class="mb-0 text-center">
+                                            <a class="text-primary" data-bs-toggle="modal" data-bs-target="#showImageModal" rel="noopener noreferrer" *ngIf="obj.monitoringStatus != Constant.MONITORING_STATUS_PENDING && !Constant.EMPTY_STRINGS.includes(obj.screenshot)">
+                                                <i class="bi bi-eye pointer" (click)="selectedImage = obj.screenshot"></i>
+                                            </a>
+
+                                            <div class="spinner-border text-warning" role="status" style="width:20px;height: 20px;" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+
+                                            <i class="bi bi-eye-slash" *ngIf="obj.monitoringStatus != Constant.MONITORING_STATUS_PENDING && Constant.EMPTY_STRINGS.includes(obj.screenshot)"></i>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="tableinfo">
+                                        <p class="mb-0">{{obj.provider.specialty}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <span class="badge-grey textWrap">{{obj.provider.npi}}</span>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.phone | mask:'(000)-000-0000'}}</p>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.email}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <span class="statusdotgreen" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_NOT_FOUND">
+                                            <!-- <div class="statusdesc">Monitoring</div> -->
+                                        </span>
+                                        <span class="statusdotyellow" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">
+                                            <!-- <div class="statusdesc">Not Monitoring</div> -->
+                                        </span>
+                                        <span class="statusdotred" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_FOUND">
+                                            <!-- <div class="statusdesc">Not Monitoring</div> -->
+                                        </span>
+                                        <span *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_NOT_FOUND">Clear</span>
+                                        <span *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">Not Monitoring</span> 
+                                        <span *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_FOUND">Alert</span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="paginationmain" *ngIf="totalItems>0 && !loadingToggle">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <p class="currentshowing mb-0">
+                            Showing <span>{{monitoringList.length}}</span> of <span>{{totalItems}}</span>
+                        </p>
+                        <div class="col-lg-6">
+                            <div class="card-body d-flex justify-content-end">
+                                <ngb-pagination [collectionSize]="totalItems" [rotate]="true" (pageChange)="pageChanged($event)" [pageSize]="monitoringEntity.databaseHelper.itemsPerPage" [(page)]="monitoringEntity.databaseHelper.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                                </ngb-pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- show image modal -->
+<div class="modal blur-bg-2" id="showImageModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:80%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">On-going Monitoring Snapshot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" style="overflow: scroll;min-height: 350px;">
+                <img [src]="selectedImage" alt="" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modals -->
+<div class="expiredmain" [ngClass]="{'expiredmainslide':cartToggle==true}">
+    <div class="expiredinner">
+        <div class="backbtn">
+            <i class="bi bi-chevron-left" (click)="togglecloseCartFunc()"></i>
+        </div>
+        <div class="expiredinnertiitle">
+            <h4 *ngIf="monitoringType == Constant.MONITORING_STATUS_NOT_FOUND"><span class="statusdotgreen"></span>Clear</h4>
+            <h4 *ngIf="monitoringType == Constant.MONITORING_STATUS_PENDING"><span class="statusdotyellow"></span>Not Monitoring</h4>
+            <h4 *ngIf="monitoringType == Constant.MONITORING_STATUS_FOUND"><span class="statusdotred"></span>Alert</h4>
+        </div>
+        <div class="expiredinnertable">
+
+            <app-circular-loader *ngIf="filterloadingToggle"></app-circular-loader>
+            <div class="empty-notific" *ngIf="!filterloadingToggle && filteredMonitoringList.length == 0">
+                <div class="empty-notificinner">
+                    <div class="empty-notificinnerimg">
+                        <img src="assets/images/allexpirable.svg" alt="" style="width:80%">
+                    </div>
+                    <h6 class="mt-4 text-muted">No data found</h6>
+                </div>
+            </div>
+            <div class="usertableinner table-responsive" style="height: 450px; overflow-y: scroll;" *ngIf="!filterloadingToggle && filteredMonitoringList.length > 0">
+                <table class="table" *ngIf="!filterloadingToggle && filteredMonitoringList.length > 0">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%">Provider Name <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90"></i></th>
+                            <th style="width: 22%">Database</th>
+                            <th style="width: 24%;text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let obj of filteredMonitoringList">
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0 pointer">
+                                        {{obj.provider.firstName}} {{obj.provider.lastName}}
+                                    </p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0">{{obj.database}}</p>
+                                </div>
+                            </td>
+                            <td >
+                                <div class="tableinfo">
+                                    <span class="statusdotgreen" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_NOT_FOUND">
+                                        <!-- <div class="statusdesc">Monitoring</div> -->
+                                    </span>
+                                    <span class="statusdotyellow" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">
+                                        <!-- <div class="statusdesc">Not Monitoring</div> -->
+                                    </span>
+                                    <span class="statusdotred" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_FOUND">
+                                        <!-- <div class="statusdesc">Not Monitoring</div> -->
+                                    </span>
+                                    <span *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_NOT_FOUND">Clear</span>
+                                    <span *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">Not Monitoring</span> 
+                                    <span *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_FOUND">Alert</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="paginationmain" *ngIf="filteredMonitoringList.length!=0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <p class="currentshowing mb-0">
+                        Showing <span>{{filteredMonitoringList.length}}</span> of <span>{{filteredTotalItems}}</span>
+                    </p>
+                    <div class="col-lg-6">
+                        <div class="card-body d-flex justify-content-end">
+                            <ngb-pagination [collectionSize]="filteredTotalItems" [rotate]="true" (pageChange)="filteredPageChanged($event)" [pageSize]="databaseHelper.itemsPerPage" [(page)]="databaseHelper.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<button type="button" class="btn btn-primary d-none" #userDetailmodalButton data-bs-toggle="modal" data-bs-target="#userDetailmodal"></button>
+<div class="modal blur-bg-2" id="userDetailmodal" tabindex="-1" aria-labelledby="userDetailmodal" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered    ">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h1 class="modal-title" id="profilEditLabel">John Doe</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="rolemodalbody">
+                    <div class="rolemodalinner">
+                        <h3>John’s Information</h3>
+                        <div class="userdetails">
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Mobile : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Company Phone : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Extension Number : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">E-Mail : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Status : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Role : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Title : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">About Info : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Timezone : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Lang Code : </p>
+                                <p class="text-start"> Placeholder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn primarycancelbtn" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn primarybtn">Update</button>
+            </div>
+        </div>
+    </div>
+</div>

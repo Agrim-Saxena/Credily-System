@@ -1,0 +1,1610 @@
+<div class="container-fluid">
+    <div class="main">
+        <div class="roletitlemain d-flex justify-content-between align-items-center">
+            <div class="breadcrumb-bx">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item pointer">
+                            <a [routerLink]="Route.EXPIRABLE_ALL_PROVIDER" class="text-decoration-none">Expirables</a>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="breadcrumb-item pointer">
+                            <a [routerLink]="Route.EXPIRABLE_ALL_PROVIDER" class="text-decoration-none">All Expirables by Provider</a>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="breadcrumb-item active">Provider Expirables</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <div class="breadcrumbbtnrw d-flex align-items-center gap-2">
+                <!-- <button type="button" class="outlinesmbtn" *ngIf="!Constant.EMPTY_STRINGS.includes(role) && role != Constant.ROLE_PROVIDER">
+                    <i class="bi bi-eye"></i>
+                    See Provider View
+                </button> -->
+                <div class="dropdown pdependent" *ngIf="!Constant.EMPTY_STRINGS.includes(role) && role != Constant.ROLE_PROVIDER">
+                    <a class="btn outlinesmbtn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Profile Status <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+
+                    <ul class="dropdown-menu pdependent">
+                        <li><button class="dropdown-item pointer pdependent" [disabled]="provider.statusId==1" [ngClass]="{'active': provider.statusId==1}" (click)="updateProviderProfileStatus()">Enable</button></li>
+                        <li><button class="dropdown-item pointer pdependent" [disabled]="provider.statusId==2" [ngClass]="{'active': provider.statusId==2}" (click)="updateProviderProfileStatus()">Disable</button></li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <a class="btn primarysmbtn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Notifications <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item pointer" (click)="viewNotification()">View</a></li>
+                        <li><a class="dropdown-item pointer pdependent" (click)="manageNotification()">Manage</a></li>
+                        <!-- <li><a class="dropdown-item pdependent" routerLink="/provider/provider-notification" [queryParams]="{uuid:uuid}">Manage</a></li> -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="detailcardmain">
+            <div class="detailcardinner d-flex">
+                <div class="detailcardcol">
+                    <h3>Provider Name</h3>
+                    <!-- <p class="truncate"><span class="statusdotred"></span>John Doe Therapy</p> -->
+                    <p class="truncate">
+                        <span class="statusdotred" [ngClass]="{statusdotgreen: provider.expirableStatus == Constant.up_To_Date,
+                            statusdotyellow: provider.expirableStatus == Constant.about_To_Expire,
+                            statusdotred: provider.expirableStatus == Constant.expired}">
+                        </span> {{ provider.firstName }} {{ provider.lastName }}
+                    </p>
+                </div>
+                <div class="detailcardcol">
+                    <h3>Account Name</h3>
+                    <p class="truncate">{{ provider.accountName }}</p>
+                </div>
+                <div class="detailcardcol">
+                    <h3>Account Type</h3>
+                    <p class="truncate">{{ provider.accountType }}</p>
+                </div>
+                <div class="detailcardcol">
+                    <h3>Type</h3>
+                    <p class="truncate">{{ provider.type }}</p>
+                </div>
+                <div class="detailcardcol">
+                    <h3>NPI Number</h3>
+                    <p class="truncate">{{ provider.npi }}</p>
+                </div>
+                <div class="detailcardcol">
+                    <h3>Location</h3>
+                    <p class="truncate">{{ provider.location }}</p>
+                </div>
+                <div class="detailcardcol">
+                    <h3><i class="bi bi-telephone"></i> Phone</h3>
+                    <p class="truncate">{{ provider.phone | mask:'(000)-000-0000' }}</p>
+                </div>
+                <div class="detailcardcol">
+                    <h3><i class="bi bi-envelope"></i> Email</h3>
+                    <p class="truncate">{{ provider.email }}</p>
+                </div>
+                <div class="detailcardcol">
+                    <h3><i class="bi bi-calendar-minus"></i> Birth Date</h3>
+                    <p class="truncate">{{ provider.dob | date:'MM-dd-yyyy' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="expirableStatusCardMain" [ngClass]="{expirableStatusGreen: provider.expirableStatus == Constant.up_To_Date,
+            expirableStatusYellow: provider.expirableStatus == Constant.about_To_Expire,
+            expirableStatusRed: provider.expirableStatus == Constant.expired}" *ngIf="!expirableToggle">
+            <div class="expirableStatusCardinner">
+                <div class="row px-1 align-content-center">
+                    <div class="col-lg-1 px-2">
+                        <div class="expirableStatusimg">
+                            <img src="assets/images/expstatusimg.svg" alt=""> 
+                        </div>
+                    </div>
+                    <div class="col-lg-11 px-2 my-auto">
+                        <div class="expirableStatusInfo" *ngIf="provider.expirableStatus == Constant.up_To_Date">
+                            <i class="bi bi-check-circle-fill" style="color:#04844B"></i>
+                            <p>All credentials are up-to-date and no action is required.</p>
+                        </div>
+                        <div class="expirableStatusInfo" *ngIf="provider.expirableStatus == Constant.about_To_Expire">
+                            <i class="bi bi-dash-circle-fill" style="color:#FFD25D"></i>
+                            <p>Credentials are expiring soon, and some action needs to be taken.</p>
+                        </div>
+                        <div class="expirableStatusInfo" *ngIf="provider.expirableStatus == Constant.expired">
+                            <i class="bi bi-exclamation-circle-fill" style="color:#FF2020"></i>
+                            <p>There is an immediate need to take action since credentials have expired.</p>
+                        </div>
+                        <div class="expirableStatusInfo" *ngIf="Constant.EMPTY_STRINGS.includes(provider.expirableStatus)">
+                            <p>--------</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row px-1">
+            <div class="col-lg-6 px-2 mb-3">
+                <div class="provider-dtlscard">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <div class="accordion-button" >
+                                    <div class="d-inline-block pointer collapsed iconRotate" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" (click)="callExpirableFunc()">
+                                        <span [ngClass]="{statusdotgreen: provider.expirableStatus == Constant.up_To_Date,
+                                            statusdotyellow: provider.expirableStatus == Constant.about_To_Expire,
+                                            statusdotred: provider.expirableStatus == Constant.expired}">
+                                        </span> Expirables
+                                        <i class="bi bi-chevron-down"></i>
+                                    </div>
+
+                                    <div class="accordbtnactions">
+                                        <button type="button" class="btn loginfilledbackbtn" (click)="goToAudit('Expirable')">
+                                            <i class="bi bi-clock"></i> Audit Trail
+                                        </button>
+                                        <button type="button" class="btn primarybtn pdependent" (click)="goToExpirable()">
+                                            <i class="bi bi-plus-lg"></i> Add New
+                                        </button>
+                                    </div>
+                                </div>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="scrollAccordion" (scroll)="scrollDownExpirable($event)">
+                                        <div class="provider-dtlscardinner">
+                                            <div class="form-group usrtblesearch position-relative" *ngIf="searchExpirable">
+                                                <input type="text" placeholder="Search Expirable" id="expirable" name="expirableList" class="form-control" [(ngModel)]="expirableDatabaseHelper.search" (ngModelChange)="this.expirableSearch.next($event)" />
+                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                <!-- <i class="fa-solid fa-xmark pointer" style=" padding-left: 32.5rem;" *ngIf="expirableDatabaseHelper.search.length>0" (click)="expirableDatabaseHelper.search=''; searchExpirableMethod()"></i> -->
+                                            </div>
+                                            <div class="empty-notific" *ngIf="!expirableLoaderToggle && expirableList.length == 0">
+                                                <div class="empty-notificinner">
+                                                    <div class="empty-notificinnerimg">
+                                                        <img src="assets/images/noinformation.svg" alt="" style="width:80%">
+                                                    </div>
+                                                    <h4>No Document Found.</h4>
+                                                </div>
+                                            </div>
+                                            <div class="usertable mt-3" *ngIf="expirableList.length > 0">
+                                                <div class="usertableinner table-responsive">
+                                                    <table class="table mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 25%">
+
+                                                                    <span *ngIf="!credentialToggle" (click)="filterCredentials()" style="cursor: pointer;">
+                                                                        Credentials 
+                                                                        <i class="fa-solid fa-filter" *ngIf="selectedCredential.length == 0"></i>
+                                                                        <i *ngIf="selectedCredential.length > 0" class="fa-solid fa-filter">
+                                                                            <sup class="filterActive">{{selectedCredential.length}}</sup>
+                                                                        </i>
+                                                                    </span>
+                                                                    <angular2-multiselect *ngIf="credentialToggle" id="stateSelectBox" name="stateSelectBox" [data]="credentialList" [settings]="dropdownSettingsCredentials" [(ngModel)]="selectedCredential" #stateSelectBox="ngModel" (ngModelChange)="selectCredential($event)"
+                                                                        required>
+                                                                    </angular2-multiselect>
+
+                                                                    <!-- <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90" id="ex" name="expirable" *ngIf="databaseHelper.sortBy != 'docType'" (click)="sort('docType', 'ASC')"></i>
+                                                                    <i class="fa-solid fa-arrow-up" *ngIf="expirableDatabaseHelper.sortBy == 'docType' && expirableDatabaseHelper.sortOrder == 'ASC'" (click)="sort('docType', 'DESC')"></i>
+                                                                    <i class="fa-solid fa-arrow-down" *ngIf="expirableDatabaseHelper.sortBy == 'docType' && expirableDatabaseHelper.sortOrder == 'DESC'" (click)="sort('docType', 'ASC')"></i> -->
+                                                                </th>
+                                                                <th style="width: 15%; border-bottom-color: #04844b" class="bg-success text-white text-center">
+                                                                    Upto Date
+                                                                </th>
+                                                                <th style="width: 15%; border-bottom-color: #ffb75d" class="bg-warning text-white text-center">
+                                                                    Expiring Soon
+                                                                </th>
+                                                                <th style="width: 15%; border-bottom-color: #FF0000" class="bg-danger text-white text-center">
+                                                                    Expired
+                                                                </th>
+                                                                <th class="text-center" style="width: 12%">
+                                                                    Action
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let expirable of expirableList; let i = index">
+                                                                <td>
+                                                                    <div class="tableinfo">
+                                                                        <p class="mb-0">
+                                                                            {{ expirable.docType | slice : 0 : 25 }}
+                                                                            <span *ngIf="expirable.docType!=null && expirable.docType.length > 25">...</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo text-center">
+                                                                        <span class="statusdotgreen" *ngIf="expirable.expirationDateTemp - Constant.currentDate > Constant.nintyDaysMilisecond">
+                                                                            <div class="statusdesc">Upto Date</div>
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo text-center">
+                                                                        <span class="statusdotyellow" *ngIf="expirable.expirationDateTemp - Constant.currentDate > 0 && expirable.expirationDateTemp - Constant.currentDate <= Constant.nintyDaysMilisecond">
+                                                                            <div class="statusdesc">Expiring in {{expirable.diff}} days</div>
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo text-center">
+                                                                        <span class="statusdotred" *ngIf="expirable.expirationDateTemp - Constant.currentDate <= 0">
+                                                                            <div class="statusdesc">Expired</div>
+                                                                        </span>
+                                                                        <!-- <span class="statusdotgreen pointer">
+                                                                            <div class="statusdesc">Updated</div>
+                                                                        </span> -->
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo">
+                                                                        <div class="actiontable d-flex align-items-center justify-content-center">
+                                                                            <a class="text-primary pointer" type="link" (click)="viewExpirable(expirable)">
+                                                                                View
+                                                                            </a>
+                                                                            <a class="pointer borderLeft pdependent" (click)="openDeleteModel(i, 'Expirable')">
+                                                                                <i class="bi bi-trash3" style="color: #f05252 !important"></i>
+                                                                            </a>
+                                                                            <a class="text-primary borderLeft pointer pdependent" (click)="editExpirable(i)">
+                                                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <app-circular-loader *ngIf="expirableLoaderToggle"></app-circular-loader>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 px-2 mb-3">
+                <div class="provider-dtlscard">
+                    <div class="accordion" id="accordioncollapseDocuments">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <div class="accordion-button" type="button">
+                                    <span class="d-inline-block pointer collapsed iconRotate" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments" (click)="callAttachmentFunc()">
+                                        Documents
+                                        <i class="bi bi-chevron-down"></i>
+                                    </span>
+                                    <div class="accordbtnactions">
+                                        <button type="button" class="btn loginfilledbackbtn" (click)="viewVault()">
+                                            Go to Vault <i class="bi bi-box-arrow-up-right"></i>
+                                        </button>
+                                        <button type="button" class="btn primarybtn pdependent" data-bs-toggle="modal" data-bs-target="#addDocvaultmodal">
+                                            <i class="bi bi-plus-lg"></i>
+                                            Add New
+                                        </button>
+                                    </div>
+                                </div>
+                            </h2>
+                            <div id="collapseDocuments" class="accordion-collapse collapse " data-bs-parent="#accordioncollapseDocuments">
+
+                                <div class="accordion-body">
+                                    <div class="scrollAccordion" (scroll)="scrollDownProviderAttachment($event)">
+                                        <div class="provider-dtlscardinner">
+                                            <div class="form-group usrtblesearch position-relative" *ngIf="searchDocument">
+                                                <input type="text" placeholder="Search Documents" id="attachment" name="attachmentList" class="form-control" [(ngModel)]="databaseHelperAttachment.search" (ngModelChange)="this.documentSearch.next($event)" />
+                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                <!-- <i class="fa-solid fa-xmark pointer" style=" padding-left: 32.5rem;" *ngIf="databaseHelperAttachment.search.length>0" (click)="databaseHelperAttachment.search=''; searchProviderAttachment()"></i> -->
+                                            </div>
+
+                                            <div class="empty-notific" *ngIf="!attachmentLoaderToggle && attachmentList.length == 0">
+                                                <div class="empty-notificinner">
+                                                    <div class="empty-notificinnerimg">
+                                                        <img src="assets/images/nodocument.svg" alt="">
+                                                    </div>
+
+                                                    <h4>No Document Found.</h4>
+                                                </div>
+                                            </div>
+
+                                            <div class="usertable mt-3" *ngIf="attachmentList.length > 0">
+                                                <div class="usertableinner table-responsive">
+                                                    <table class="table mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 22%">
+                                                                    Credentials
+                                                                    <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90" *ngIf="
+                                        databaseHelperAttachment.sortBy !=
+                                        'fileName'
+                                    " (click)="sort1('fileName', 'ASC')"></i>
+                                                                    <i class="fa-solid fa-arrow-up" *ngIf="
+                                        databaseHelperAttachment.sortBy ==
+                                        'fileName' &&
+                                        databaseHelperAttachment.sortOrder == 'ASC'
+                                    " (click)="sort1('fileName', 'DESC')"></i>
+                                                                    <i class="fa-solid fa-arrow-down" *ngIf="
+                                        databaseHelperAttachment.sortBy ==
+                                        'fileName' &&
+                                        databaseHelperAttachment.sortOrder == 'DESC'
+                                    " (click)="sort1('fileName', 'ASC')"></i>
+                                                                </th>
+                                                                <!-- <th style="width: 5%;">Credentials <i class="fa-solid fa-arrow-down-long"></i></th> -->
+                                                                <th style="width: 17%">
+                                                                    Issue Date
+                                                                    <i class="fa-solid fa-arrow-right-arrow-left
+                                                                        fa-rotate-90" *ngIf="databaseHelperAttachment.sortBy!='issueDate'" (click)="sort1('issueDate','ASC')"></i>
+                                                                    <i class="fa-solid fa-arrow-up" *ngIf="databaseHelperAttachment.sortBy=='issueDate' && databaseHelperAttachment.sortOrder=='ASC'" (click)="sort1('issueDate','DESC')"></i>
+                                                                    <i class="fa-solid fa-arrow-down" *ngIf="databaseHelperAttachment.sortBy=='issueDate' && databaseHelperAttachment.sortOrder=='DESC'" (click)="sort1('issueDate','ASC')"></i>
+                                                                </th>
+                                                                <th style="width: 17%">Expiration Date</th>
+                                                                <th style="width: 1%"></th>
+                                                                <th style="width: 18%; text-align: center">
+                                                                    Action
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let obj of attachmentList">
+                                                                <td>
+                                                                    <div class="tableinfo">
+                                                                        <p class="mb-0">{{ obj.fileName | slice : 0 : 25 }}</p>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo">
+                                                                        <span class="badge-grey" *ngIf="Constant.EMPTY_STRINGS.includes(obj.issueDate)">---</span>
+                                                                        <span class="badge-grey" *ngIf="!Constant.EMPTY_STRINGS.includes(obj.issueDate)">{{obj.issueDate | date : "MM-dd-yyyy" : "EST"}}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo">
+                                                                        <span class="badge-grey" *ngIf="Constant.EMPTY_STRINGS.includes(obj.expirationDate)">---</span>
+                                                                        <span class="badge-grey" *ngIf="!Constant.EMPTY_STRINGS.includes(obj.expirationDate)">{{obj.expirationDate | date : "MM-dd-yyyy" : "EST"}}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo otpClass">
+                                                                        <span class="otpIcon pdependent" (click)="getOtp(obj)"><i class="bi bi-file-lock"></i>
+                                                                        </span>
+                                                                        <!-- <div class="otpDesc" *ngIf="obj.otp != null">{{obj.otp}}</div> -->
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="tableinfo">
+                                                                        <div class="actiontable d-flex
+                                                                            align-items-center justify-content-center">
+                                                                            <span class="text-primary pointer" (click)="fileLink.click()">View</span>
+                                                                            <a href="{{ obj.fileUrl }}" target="_blank" #fileLink hidden></a>
+                                                                            <span class="pointer pdependent" (click)="downloadSingleImage(obj.fileUrl,obj.fileName)">Download</span>
+                                                                            <span class="text-success pointer pdependent" (click)="openShareModel(obj)">Share</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <app-circular-loader *ngIf="attachmentLoaderToggle"></app-circular-loader>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row px-1">
+            <div class="col-lg-6 px-2 mb-3">
+                <div class="provider-dtlscard">
+                    <div class="accordion" id="accordionongoingMonitor">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <div class="accordion-button" type="button">
+                                    <div class="d-inline-block pointer collapsed iconRotate" data-bs-toggle="collapse" data-bs-target="#collapseongoingMonitor" aria-expanded="true" aria-controls="collapseOne" (click)="callMonitoringFunc()" >
+                                        <span [ngClass]="{'statusdotgreen':provider.onGoingMonitoringStatus == Constant.MONITORING_STATUS_NOT_FOUND,
+                                            'statusdotyellow': provider.onGoingMonitoringStatus == Constant.MONITORING_STATUS_PENDING,
+                                            'statusdotred':provider.onGoingMonitoringStatus == Constant.MONITORING_STATUS_FOUND }">
+                                        </span> On-going Monitoring
+                                        <i class="bi bi-chevron-down"></i>
+                                    </div>
+
+                                    <div class="accordbtnactions">
+                                        <button type="button" class="btn loginfilledbackbtn" (click)="goToAudit('On-going Monitoring')">
+                                            <i class="bi bi-clock"></i> Audit Trail
+                                        </button>
+                                        <button type="button" class="btn primarybtn pdependent" data-bs-toggle="modal" data-bs-target="#monitoringNewModal" (click)="resetMonitorForm()">
+                                            <i class="bi bi-plus-lg"></i>
+                                            Add New
+                                        </button>
+                                    </div>
+                                </div>
+                            </h2>
+                            <div id="collapseongoingMonitor" class="accordion-collapse collapse" data-bs-parent="#accordionongoingMonitor">
+
+                                <div class="accordion-body">
+                                    <div class="scrollAccordion" (scroll)="scrollDownOngoingMonitoring($event)">
+                                        <div class="provider-dtlscardinner">
+                                            <div class="form-group usrtblesearch position-relative" *ngIf="searchOnGoinig">
+                                                <input type="text" placeholder="Search On-going Monitoring" id="monitoring" name="monitoringList" class="form-control" [(ngModel)]="monitorDatbaseHelper.search" (ngModelChange)="this.monitoringSearch.next($event)" />
+                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                <!-- <i class="fa-solid fa-xmark pointer" style=" padding-left: 32.5rem;" *ngIf="monitorDatbaseHelper.search.length>0" (click)="monitorDatbaseHelper.search=''; searchOngoingMonitoring()"></i> -->
+                                            </div>
+
+                                            <div class="empty-notific" *ngIf="!monitoringLoaderToggle && monitoringList.length == 0">
+                                                <div class="empty-notificinner">
+
+                                                    <div class="empty-notificinnerimg">
+                                                        <img src="assets/images/nodocument.svg" alt="">
+                                                    </div>
+                                                    <h4>No Database Found.</h4>
+                                                </div>
+                                            </div>
+
+                                            <div class="usertable mt-3" *ngIf="monitoringList.length > 0">
+                                                <div class="usertableinner table">
+                                                    <table class="table mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width: 20%">
+
+                                                                    <span *ngIf="!monitoringDatabaseToggle" (click)="filterMonitoringDatabase()" style="cursor: pointer;">
+                                                                        Databases 
+                                                                        <i class="fa-solid fa-filter" *ngIf="selectedMonitoringDB.length == 0"></i>
+                                                                        <i *ngIf="selectedMonitoringDB.length > 0" class="fa-solid fa-filter">
+                                                                            <sup class="filterActive">{{selectedMonitoringDB.length}}</sup>
+                                                                        </i>
+                                                                    </span>
+                                                                    <angular2-multiselect *ngIf="monitoringDatabaseToggle" id="databaseType" name="databaseTypes" [data]="monitoringDBList" [settings]="dropdownSettingsDatabase" [(ngModel)]="selectedMonitoringDB" #databseSelectBox="ngModel" required (ngModelChange)="selectMonitoringDB($event)">
+                                                                    </angular2-multiselect>
+                                                                    <!-- <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90" *ngIf="monitorDatbaseHelper.sortBy!='docType'" (click)="sort2('docType','ASC')"></i>
+                                                                    <i class="fa-solid fa-arrow-up" *ngIf="monitorDatbaseHelper.sortBy=='docType' && monitorDatbaseHelper.sortOrder=='ASC'" (click)="sort2('docType','DESC')"></i>
+                                                                    <i class="fa-solid fa-arrow-down" *ngIf="monitorDatbaseHelper.sortBy=='docType' && monitorDatbaseHelper.sortOrder=='DESC'" (click)="sort2('docType','ASC')"></i> -->
+                                                                </th>
+                                                                <!-- <th style="width: 5%;">Credentials <i class="fa-solid fa-arrow-down-long"></i></th> -->
+                                                                <th style="width: 15%; text-align: center">
+                                                                    Status
+                                                                    <!-- <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90" *ngIf="monitorDatbaseHelper.sortBy != 'status'" (click)="sort2('status', 'ASC')"></i>
+                                                                    <i class="fa-solid fa-arrow-up" *ngIf="monitorDatbaseHelper.sortBy == 'status' && monitorDatbaseHelper.sortOrder == 'ASC'" (click)="sort2('status', 'DESC')"></i>
+                                                                    <i class="fa-solid fa-arrow-down" *ngIf="monitorDatbaseHelper.sortBy == 'status' && monitorDatbaseHelper.sortOrder == 'DESC'" (click)="sort2('status', 'ASC')"></i> -->
+                                                                </th>
+                                                                <th style="width: 25%; text-align: center">Created Date</th>
+                                                                <th style="width: 15%; text-align: center">Snapshot</th>
+                                                                <th style="width: 15%; text-align: center">
+                                                                    Action
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let obj of monitoringList; let i = index">
+                                                                <td>
+                                                                    <div class="tableinfo">
+                                                                        <p class="mb-0">{{ obj.database }}</p>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="text-align: center">
+                                                                    <div class="tableinfo">
+                                                                        <span class="statusdotgreen" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_NOT_FOUND">
+                                                                            <div class="statusdesc">Monitoring</div>
+                                                                        </span>
+                                                                        <span class="statusdotyellow" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">
+                                                                            <div class="statusdesc">Not Monitoring</div>
+                                                                        </span>
+                                                                        <span class="statusdotred" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_FOUND">
+                                                                            <div class="statusdesc">Not Monitoring</div>
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="text-align: center">
+                                                                    <div class="tableinfo">
+                                                                        <span class="badge-grey">{{obj.createdDate | date:'MM-dd-yyyy' : 'EST'}}</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="text-align: center">
+                                                                    <div class="tableinfo">
+                                                                        <div class="mb-0 text-center">
+                                                                            <a class="text-primary" data-bs-toggle="modal" data-bs-target="#showImageModal" rel="noopener noreferrer" *ngIf="obj.monitoringStatus != Constant.MONITORING_STATUS_PENDING && !Constant.EMPTY_STRINGS.includes(obj.screenshot)">
+                                                                                <i class="bi bi-eye pointer" (click)="selectedImage = obj.screenshot"></i>
+                                                                            </a>
+
+                                                                            <div class="spinner-border text-warning" role="status" style="width:20px;height: 20px;" *ngIf="obj.monitoringStatus == Constant.MONITORING_STATUS_PENDING">
+                                                                                <span class="visually-hidden">Loading...</span>
+                                                                            </div>
+
+                                                                            <i class="bi bi-eye-slash" *ngIf="obj.monitoringStatus != Constant.MONITORING_STATUS_PENDING && Constant.EMPTY_STRINGS.includes(obj.screenshot)"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="text-align: center">
+                                                                    <div class="tableinfo">
+                                                                        <div class="actiontable d-flex align-items-center justify-content-center">
+                                                                            <span class="text-primary pointer" data-bs-target="#viewEditmodaOn" data-bs-toggle="modal" (click)="ViewOnGoingMointioring(obj.id)">View</span>
+                                                                            <span class="pointer borderLeft pdependent" (click)="openDeleteModel(i, 'On-going Monitoring')">
+                                                                                <i class="bi bi-trash3" style="color: #f05252 !important"></i>
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <app-circular-loader *ngIf="monitoringLoaderToggle"></app-circular-loader>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 px-2 mb-3">
+                <div class="provider-dtlscard">
+                    <div class="accordion" id="accordionprovidinfo">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <div class="accordion-button" type="button">
+                                    <span class="d-inline-block pointer collapsed iconRotate" data-bs-toggle="collapse" data-bs-target="#collapseprovidinfo" aria-expanded="true" aria-controls="collapseprovidinfo">
+                                        Provider Information
+                                        <i class="bi bi-chevron-down"></i>
+                                    </span>
+                                    <div class="accordbtnactions">
+                                        <button type="button" class="btn primarybtn" (click)="viewProfile()">
+                                            <i class="bi bi-person"></i> View Profile
+                                        </button>
+                                    </div>
+                                </div>
+                            </h2>
+                            <div id="collapseprovidinfo" class="accordion-collapse collapse" data-bs-parent="#accordionprovidinfo">
+
+                                <div class="accordion-body">
+                                    <div class="empty-notific" *ngIf="!providerLoaderToggle && provider == null">
+                                        <div class="empty-notificinner">
+                                            <div class="empty-notificinnerimg">
+                                                <img src="assets/images/noinformation.svg" alt="" style="width: 80%" />
+                                            </div>
+
+                                            <h4>No Document Found.</h4>
+                                        </div>
+                                    </div>
+                                    <div class="provider-dtlscardinner" *ngIf="!providerLoaderToggle && provider != null">
+                                        <div class="providerinfomain">
+                                            <div class="row px-1">
+                                                <div class="col-lg-4 px-2 mb-3">
+                                                    <div class="providerdetailsinner">
+                                                        <p class="mb-0">Contact Type</p>
+                                                        <h3>
+                                                            {{ provider.firstName ? provider.firstName : "" }} {{ provider.lastName ? provider.lastName : "" }}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 px-2 mb-3">
+                                                    <div class="providerdetailsinner">
+                                                        <p class="mb-0">Hospital</p>
+                                                        <h3>{{ provider.accountName }}</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 px-2 mb-3">
+                                                    <div class="providerdetailsinner border-0">
+                                                        <p class="mb-0">Mailing Address</p>
+                                                        <h3>{{ provider.location }}</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row px-1">
+                                                <div class="col-lg-4 px-2 mb-3">
+                                                    <div class="providerdetailsinner">
+                                                        <p class="mb-0">Credentialling Status</p>
+                                                        <h3>N/A</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 px-2 mb-3">
+                                                    <div class="providerdetailsinner">
+                                                        <p class="mb-0">Next Credentialing Date</p>
+                                                        <h3>N/A</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 px-2 mb-3">
+                                                    <div class="providerdetailsinner border-0">
+                                                        <p class="mb-0">Social Security Number</p>
+                                                        <div class="d-flex">
+                                                            <h3 *ngIf="toggleSsn">{{ provider.ssn | mask:'000-00-0000' }}</h3>
+                                                            <h3 *ngIf="!toggleSsn">xxx-xx-xxxx</h3>
+                                                            <i class="passwordvisible pointer ms-4" [ngClass]="{'bi bi-eye-slash':toggleSsn, 'bi bi-eye':!toggleSsn}" (click)="toggleSsn = !toggleSsn"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <app-circular-loader *ngIf="providerLoaderToggle"></app-circular-loader>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="d-none btn btn-primary" id="otpModalButton" #otpModalButton data-bs-toggle="modal" data-bs-target="#otpModal"></button>
+<div class="modal blur-bg-2" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="max-height:580px">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Document shared with</h5>
+                <button type="button" class="btn-close" #closeModal data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="expiredinnertable">
+                    <app-circular-loader *ngIf="sharedDocLoadingToggle"></app-circular-loader>
+                    <div class="empty-notific" *ngIf="!sharedDocLoadingToggle && sharedDocumentList.length == 0">
+                        <div class="empty-notificinner">
+                            <div class="empty-notificinnerimg">
+                                <img src="assets/images/allexpirable.svg" alt="" style="width:80%">
+                            </div>
+                            <h6 class="mt-4 text-muted">No data found</h6>
+                        </div>
+                    </div>
+                    <div class="usertableinner table-responsive" style="height: 450px; overflow-y: scroll;">
+                        <table class="table" *ngIf="!sharedDocLoadingToggle && sharedDocumentList.length > 0">
+                            <thead>
+                                <tr>
+                                    <th>Shared with</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+        
+                            <tbody>
+                                <tr *ngFor="let obj of sharedDocumentList; let i=index">
+                                    <td>
+                                        <div class="tableinfo">
+                                            <p class="mb-0 pointer">
+                                                {{obj.email}}
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="tableinfo">
+                                            <p class="mb-0" *ngIf="obj.isEnable==1">Enabled</p>
+                                            <p class="mb-0" *ngIf="obj.isEnable==0">Disabled</p>
+                                        </div>
+
+                                        <div class="tableinfo pdependent">
+                                            <div class="customswitch">
+                                              <input type="checkbox" [checked]="obj.isEnable==1" (click)="changeStatus(obj)"
+                                                id="customSwitch{{i}}" class="d-none">
+                                              <label for="customSwitch{{i}}" class="pointer position-relative">
+                                                <span></span>
+                                              </label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="tableinfo">
+                                            <div class="actiontable d-flex align-items-center justify-content-center">
+                                                <a class="pointer pdependent" (click)="openDeleteModel(obj.uuid, 'Shared Document')">
+                                                    <i class="bi bi-trash3" style="color: #f05252 !important;font-size: 18px;"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="paginationmain" *ngIf="sharedDocumentList.length!=0">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <p class="currentshowing mb-0">
+                                Showing <span>{{sharedDocumentList.length}}</span> of <span>{{totalSharedDocument}}</span>
+                            </p>
+                            <div class="col-lg-6">
+                                <div class="card-body d-flex justify-content-end">
+                                    <ngb-pagination [collectionSize]="totalSharedDocument" [rotate]="true" (pageChange)="sharedDocumentPageChanged($event)" [pageSize]="sharedDocumentDataBaseHelper.itemsPerPage" [(page)]="sharedDocumentDataBaseHelper.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                                    </ngb-pagination>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<!-- Modal Edit-->
+
+<!-- review modal -->
+<button data-bs-toggle="modal" style="display: none;" data-bs-target="#viewExpirableModal" id="viewExpirableModalButton" #viewExpirableModalButton></button>
+<div class="modal blur-bg-2" id="viewExpirableModal" tabindex="-1" aria-labelledby="viewEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-custom modal-dialog-centered">
+        <div class="modal-content">
+            <div class="custom-modal-header d-flex justify-content-between align-items-center">
+                <div><b>{{selectedExpirable.stateCode}} {{ selectedExpirable.docType }}</b></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="rolemodalinner">
+                    <p class="titleform mb-2"></p>
+                    <div class="row px-1 mb-2">
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner">
+                                <p class="mb-0">Name</p>
+                                <h3>{{ selectedExpirable.docType }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner border-0">
+                                <p class="mb-0">State</p>
+                                <h3>
+                                    {{selectedExpirable.stateName}}
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner">
+                                <p class="mb-0">Frequency</p>
+                                <h3>{{ selectedExpirable.frequency }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner border-0">
+                                <p class="mb-0">Notifications</p>
+                                <h3>
+                                    <span *ngIf="selectedExpirable.isNotify == 1">True</span>
+                                    <span *ngIf="selectedExpirable.isNotify == 0">False</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner">
+                                <p class="mb-0">Expiration Date</p>
+                                <h3>
+                                    {{ selectedExpirable.expirationDate | date : "MM-dd-yyyy" }}
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner border-0">
+                                <p class="mb-0">Next Notification Date</p>
+                                <h3>
+                                    {{selectedExpirable.nextNotification}}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- review modal end -->
+<button id="profilEditmodalButton" #profilEditmodalButton data-bs-toggle="modal" data-bs-target="#profilEditmodal" style="display:none"></button>
+<div class="modal blur-bg-2" id="profilEditmodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="profilEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-custom modal-dialog-centered">
+        <div class="modal-content">
+            <div class="custom-modal-header d-flex justify-content-between align-items-center">
+                <!-- <h1 class="modal-title" id="profilEditLabel">Edit Role</h1> -->
+                <div class="mdlprogess-bar">
+                    <div class="mdlprogress" [style]="{ width: progressPer + '%' }"></div>
+                </div>
+                <span>Step{{step}}/3</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="expirableCloseModel()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <!-- New Expirable -->
+                <form #newExpirableForm="ngForm" ngNativeValidate (ngSubmit)="goToNewNotification()">
+                    <div class="rolemodalbody" *ngIf="newExpirableToggle">
+                        <div class="enterprisetitle">
+                            <h3 class="pb-1">
+                                <span *ngIf="expirable.id==0">Create</span><span *ngIf="expirable.id!=0">Update</span> 
+                                Expirable
+                            </h3>
+                        </div>
+                        <div class="rolemodalinner">
+                            <div class="row px-1">
+
+                                <div class="col-lg-3">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Upload Documents</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-9">
+
+                                    <div class="dropzone" fileDragDrop (filesChangeEmiter)="onDrop($event, Constant.DOC_TYPE_EXPIRABLE)" *ngIf="!uploadingToggle && Constant.EMPTY_STRINGS.includes(expirable.fileName)">
+                                      <div class="dropzoneLabel">
+                                        <input type="file" name="file" id="file" (change)="onSelectFile($event, Constant.DOC_TYPE_EXPIRABLE)">
+                                        <label for="file" class="dropzoneLabelinner">
+                                          <div *ngIf="!uploadingToggle && Constant.EMPTY_STRINGS.includes(expirable.fileName)">
+                                            <i class="bi bi-cloud-upload"></i>
+                                          <p class="mb-0">
+                                            <span class="pointer">Browse</span> files to upload or drag and drop it here
+                                          </p>
+                                          </div>
+                                        </label>
+                                      </div>
+                                    </div>
+                  
+                                    <div class="dropzoneUploading" *ngIf="uploadingToggle">
+                                        <div class="Uploadingcounter position-relative" [ngClass]="{'Uploadingdone':!Constant.EMPTY_STRINGS.includes(expirable.fileName)}">
+                                            {{progress | number : '1.0-0'}}%
+                                        </div>
+                                        <p *ngIf="progress>=0 && progress<30">Fetching Data</p>
+                                        <p *ngIf="progress>=30 && progress<60">Fetching Issue Date</p>
+                                        <p *ngIf="progress>=60 && progress<90">Fetching Expiration Date</p>
+                                        <p *ngIf="progress>=90 && progress<100">Fetching Required Information</p>
+                                        <p *ngIf="progress==100">Done</p>
+                                    </div>
+                  
+                                    <div class="uplodedIconbox" *ngIf="!uploadingToggle && !Constant.EMPTY_STRINGS.includes(expirable.fileName)">
+                                      <div class="uplodedIconinner position-relative">
+                                        <div class="uplodedIcon position-relative">
+                                          <i class="bi bi-file-earmark-text"></i>
+                                          <span class="pointer"><i class="bi bi-trash3" (click)="resetUpload()"></i></span>
+                                        </div>
+                                      </div>
+                                      <span>{{expirable.fileName}}</span>
+                                    </div>
+                                  
+                                </div>
+
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Document Type<sup>*</sup></label>
+                                        <angular2-multiselect id="taxIdSelectBox" name="taxIdSelectBox" [data]="docType" [settings]="dropdownSettingsDocType" [(ngModel)]="selectedDoc" #taxIdSelectBox="ngModel" (ngModelChange)="selectDocType($event)" required>
+                                        </angular2-multiselect>
+                                        <small *ngIf=" newExpirableForm.submitted && formValidtoggle" style="color: red">Select Document Type!</small>
+                                        <!-- <input type="text" placeholder="Enter First Name" class="form-control"> -->
+                                        <!-- <select class="form-control" (ngModel)="expirable.docType"> -->
+                                        <!-- <option>Physician Assistant</option> -->
+                                        <!-- </select> -->
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <app-state-dropdown [_updatedStateName]="expirable.stateName" [_updatedStateCode]="expirable.stateCode" [(stateCodeProp)]="expirable.stateCode" [(stateNameProp)]="expirable.stateName" [stateNameLabelClass]="'fw-medium'" [stateCodeLabelClass]="'fw-medium'"
+                                            [stateNameDynamic]="'State Name' " [stateCodeDynamic]="'State Code'" [stateNameClass]="'col-12'" [stateCodeClass]="'d-none'" [cityClass]="'d-none'" (callFunction)="getIssueAndExpirationDateFromDoc(expirable.docType ,expirable.stateCode)">
+                                            <!-- (callFunction)="selectState(expirable.stateName)" -->
+                                            <!-- (callFunction)="selectState(expirable.stateName, expirable.docType)" -->
+                                        </app-state-dropdown>
+                                        <!-- <small style="color: red" *ngIf="duplicateStateToggle">{{
+                                            duplicateStateMessage
+                                            }}</small> -->
+                                        <span class="row">
+                                             <!-- <small class="col-6" *ngIf=" newExpirableForm.submitted && (expirable.stateCode == undefined ||  expirable.stateCode == null || expirable.stateCode.length == 0) && formValidtoggle" style="color: red">Select State Code</small> -->
+
+                                            <small class="col-6" *ngIf="newExpirableForm.submitted && (expirable.stateName == undefined || expirable.stateName == null || expirable.stateName.length == 0) && formValidtoggle"style="color: red">Select State Name</small>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-4">
+                                        <label>Effective Date<sup>*</sup><i class="fa fa-spinner fa-spin" *ngIf="extractingDate"></i></label>
+                                        <input type="date" onkeydown="return false" required [(ngModel)]="expirable.effectiveDate" name="effDate" id="effDate" class="form-control" (ngModelChange)="setMinExpirationDate()" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-4">
+                                        <label>Expiration Date<sup>*</sup><i class="fa fa-spinner fa-spin" *ngIf="extractingDate"></i></label>
+                                        <input type="date" onkeydown="return false" required [(ngModel)]="expirable.expirationDate" [min]="minExpirationDate" name="expDate" id="expDate" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-top-0 p-0 justify-content-between">
+                                <button type="button" class="btn primarybackebtn m-0" (click)="expirableCloseModel()" data-bs-dismiss="modal">Back</button>
+                                <button type="submit" class="m-0 btn primarynextebtn">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- End New Expirable -->
+
+                <!-- New Expirable Notifications -->
+                <div class="rolemodalbody" *ngIf="newExpirableNotificationToggle">
+                    <div class="enterprisetitle">
+                        <h3 class="pb-1">New Expirable Notifications</h3>
+                        <!-- <p>Please enter your primary contact details.</p> -->
+                    </div>
+                    <form #newExpirableNotificationForm="ngForm" ngNativeValidate (ngSubmit)="goToAddNewExpirable()">
+                        <div class="rolemodalinner">
+                            <div class="row px-1">
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Enable Notifications</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8 px-2">
+                                    <div class="customswitch">
+                                        <input type="checkbox" id="customSwitch" [checked]="notificationFrequencyToggle" class="d-none" />
+                                        <label for="" class="pointer position-relative" (click)="notify()">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row px-1" *ngIf="notificationFrequencyToggle">
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Notifications Frequency<sup>*</sup></label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-8 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <angular2-multiselect id="frequencyType" name="frequencyType" [data]="frequencyListing" [settings]="dropdownSettingsfrequencyType" [(ngModel)]="selectedFrequency" #taxIdSelectBox="ngModel" (ngModelChange)="selectFrequencyType($event)">
+                                        </angular2-multiselect>
+                                        <small *ngIf="newExpirableNotificationForm.submitted && Constant.EMPTY_STRINGS.includes(expirable.frequency) && formNotificationtoggle " style="color: red">Select Frequency</small>
+                                        
+                                        <p class="mb-0 mt-1 formguide">
+                                            We’ll automatically send notifications at this frequency.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-top-0 p-0 justify-content-between">
+                                <button type="button" class="btn primarybackebtn m-0" (click)="backToExpirable()">
+                                    Back
+                                </button>
+                                <button type="submit" class="btn primarynextebtn m-0">Next</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- End New Expirable Notifications -->
+                <div class="rolemodalbody" *ngIf="addNewExpirablesToggle">
+                    <div class="enterprisetitle">
+                        <h3 class="pb-1">Add New Expirables</h3>
+                        <!-- <p>Please enter your primary contact details.</p> -->
+                    </div>
+                    <div class="rolemodalinner">
+                        <p class="titleform mb-2">Review Details</p>
+                        <div class="row px-1 mb-2">
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner">
+                                    <p class="mb-0">Name</p>
+                                    <h3>{{ provider.firstName }} {{ provider.lastName }}</h3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner border-0">
+                                    <p class="mb-0">Frequency</p>
+                                    <h3 *ngIf="!Constant.EMPTY_STRINGS.includes(expirable.frequency)">{{ expirable.frequency }}</h3>
+                                    <h3 *ngIf="Constant.EMPTY_STRINGS.includes(expirable.frequency)">---</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row px-1">
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner">
+                                    <p class="mb-0">Notifications</p>
+                                    <h3>
+                                        <span *ngIf="this.expirable.isNotify == 1">True</span>
+                                        <span *ngIf="this.expirable.isNotify == 0">False</span>
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner border-0">
+                                    <p class="mb-0">Next Notification</p>
+                                    <h3 *ngIf="!Constant.EMPTY_STRINGS.includes(expirable.nextNotification)">{{ expirable.nextNotification | date : "MM-dd-yyyy" }}</h3>
+                                    <h3 *ngIf="Constant.EMPTY_STRINGS.includes(expirable.nextNotification)">---</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 p-0 justify-content-between">
+                        <button type="button" class="btn primarybackebtn mx-0" (click)="goBackToNotification()">
+                            Back
+                        </button>
+                        <button type="button" *ngIf="expirable.id == 0" class="btn primarynextebtn" data-bs-dismiss="modal" (click)="createExpirable()">
+                            Verify
+                        </button>
+
+                        <button type="button" *ngIf="expirable.id != 0" class="btn primarynextebtn" data-bs-dismiss="modal" (click)="updateExpirable()">
+                            Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- On monitoring model -->
+
+<!-- <button id="profilEditmodalMonitoringButton" #profilEditmodalMonitoringButton data-bs-toggle="modal" data-bs-target="#profilEditmodal" style="display:none"></button> -->
+<div class="modal blur-bg-2" id="monitoringNewModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="profilEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-custom modal-dialog-centered">
+        <div class="modal-content">
+            <div class="custom-modal-header d-flex justify-content-between align-items-center">
+                <div class="mdlprogess-bar">
+                    <div class="mdlprogress" [style]="{ width: progressPer + '%' }"></div>
+                </div>
+                <span>Step{{step}}/2</span>
+                <button type="button" class="btn-close" #closemonitorFormButton data-bs-dismiss="modal" (click)="monitoringCloseModel()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+
+                <!-- New On-going Monitoring   -->
+                <div class="rolemodalbody" *ngIf="!backToFreq">
+                    <div class="enterprisetitle">
+                        <h3 class="pb-1">Create Monitoring</h3>
+                    </div>
+                    <div class="rolemodalinner pb-0">
+                        <form #monitorForm="ngForm" (ngSubmit)="goToOngoingReview()">
+                            <div class="row px-1">
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Select Database<sup>*</sup></label>
+                                        <angular2-multiselect id="databaseType" name="databaseTypes" [data]="databaseList" [settings]="dropdownSettingsDatabase" [(ngModel)]="selectedDatabase" #databseSelectBox="ngModel" required (ngModelChange)="selectMonitoringDatabase($event)">
+                                        </angular2-multiselect>
+                                        <small *ngIf=" monitorForm.submitted && (selectedDatabase == undefined || selectedDatabase == null || selectedDatabase.length == 0) && monitorValidtoggle" style="color: red">Select Database!</small>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group mdlform mb-3">
+                                            <app-state-dropdown [_updatedStateName]="monitoring.stateName" [_updatedStateCode]="monitoring.stateCode" [(stateCodeProp)]="monitoring.stateCode" [(stateNameProp)]="monitoring.stateName" [stateNameLabelClass]="'fw-medium'" [stateCodeLabelClass]="'fw-medium'"
+                                                [stateNameDynamic]="'State Name'" [stateCodeDynamic]="'State Code'" [stateNameClass]="'col-12'" [stateCodeClass]="'d-none'" [cityClass]="'d-none'" (callFunction)="checkMonitoringDuplicacy(monitoring.database,monitoring.stateName)">
+                                            </app-state-dropdown>
+                                            <span class="row" >
+                                                <small class="col-6" *ngIf="monitorForm.submitted && (monitoring.stateName == undefined || monitoring.stateName == null || monitoring.stateName.length == 0) && formValidtoggle" style="color: red">Select State Name</small>
+                                                <small *ngIf="isMonitoringExist && !checkingMonitoring" style="color: red;">Monitoring already exist!</small>
+                                            </span>
+                                        </div>
+                                        <div class="rolemodalinner">
+                                            <div class="row px-1 pointer">
+                                                <div class="col-lg-4 px-2">
+                                                    <div class="form-group mdlform mb-3">
+                                                        <label>Enable Monitoring</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 px-2">
+                                                    <div class="customswitch">
+                                                        <input type="checkbox" id="customSwitch" [checked]="monitoring.isMonitoring==1" class="d-none" />
+                                                        <label for="" class="pointer position-relative" (click)="notifyMonitoring()">
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row px-1" *ngIf="monitoring.isMonitoring==1">
+                                                <div class="col-lg-4 px-2">
+                                                    <div class="form-group mdlform mb-3">
+                                                        <label>Frequency<sup>*</sup></label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8 px-2">
+                                                    <div class="form-group mdlform mb-3">
+                                                        <angular2-multiselect id="monitoringfrequencyType" name="monitoringfrequencyType" [data]="frequencyListing" [settings]="dropdownSettingsfrequencyType" [(ngModel)]="selectedFrequency" #taxIdSelectBox="ngModel" (ngModelChange)="selectMonitoringFrequencyType($event)">
+                                                        </angular2-multiselect>
+                                                        <small *ngIf="monitorForm.submitted && Constant.EMPTY_STRINGS.includes(monitoring.frequency) && formNotificationtoggle" style="color: red">Select Frequency Type</small>
+                                                        <p class="mb-0 mt-1 formguide">
+                                                            We’ll automatically re-check this database at this frequency and alert you for any changes.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-top-0 p-0 justify-content-between">
+                                                <button type="button" class="btn primarybackebtn m-0" data-bs-dismiss="modal">
+                                                    Back
+                                                </button>
+                                                <button type="submit" [disabled]="isMonitoringExist" class="btn primarynextebtn m-0">Next</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- New On-going Monitoring   -->
+
+                <!-- New On-going Monitoring  Review -->
+                <div class="rolemodalbody" *ngIf="backToFreq">
+                    <div class="enterprisetitle">
+                        <h3 class="pb-1">New On-going Monitoring</h3>
+                    </div>
+                    <div class="rolemodalinner">
+                        <p class="titleform mb-2">Review Details</p>
+                        <div class="row px-1 mb-2">
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner">
+                                    <p class="mb-0">Name</p>
+                                    <h3>{{ monitoring.database }}</h3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner border-0">
+                                    <p class="mb-0">Frequency</p>
+                                    <h3 *ngIf="monitoring.frequency != null">{{ monitoring.frequency }}</h3>
+                                    <h3 *ngIf="monitoring.frequency == null || monitoring.frequency == ''">N/A</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row px-1">
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner">
+                                    <p class="mb-0">Monitoring</p>
+                                    <h3>
+                                        <span *ngIf="monitoring.isMonitoring == 1">True</span>
+                                        <span *ngIf="monitoring.isMonitoring == 0">False</span>
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 px-2">
+                                <div class="providerdetailsinner border-0">
+                                    <p class="mb-0">Next Check</p>
+                                    <h3 *ngIf=" monitoring.nextCheckDate != null">{{ monitoring.nextCheckDate | date:'MM-dd-yyyy' }}</h3>
+                                    <h3 *ngIf=" monitoring.nextCheckDate == null">N/A</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 p-0 justify-content-between">
+                        <button type="button" class="btn primarybackebtn" (click)="backToOngoing()">
+                            Back
+                        </button>
+                        <button type="button" class="btn primarynextebtn" data-bs-dismiss="modal" (click)="createOngoingMointoring()">
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Doc Vault -->
+<div class="modal blur-bg-2" data-bs-backdrop="static" data-bs-keyboard="false" id="addDocvaultmodal" tabindex="-1" aria-labelledby="addDocvaultmodal" aria-hidden="true">
+    <div class="modal-dialog modal-custom modal-dialog-centered">
+        <div class="modal-content">
+            <div class="custom-modal-header d-flex justify-content-between align-items-center">
+                <h1 class="modal-title" id="profilEditLabel">
+                    Add File to Document Vault
+                </h1>
+                <!-- <div class="mdlprogess-bar">
+        <div class="mdlprogress" style="width: 40%"></div>
+      </div> -->
+                <button type="button" class="btn-close" #fileFormCloseButton data-bs-dismiss="modal" (click)="docAttachmentclose()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <!-- New Expirable -->
+                <div class="rolemodalbody">
+
+                    <div class="rolemodalinner">
+                        <form ngNativeValidate #fileForm="ngForm" (ngSubmit)="createAttachment()">
+                            <div class="row px-1">
+                                <div class="col-lg-3">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Upload Documents<sup>*</sup></label>
+                                    </div>
+                                </div>
+
+                                <!-- <div class="col-lg-9">
+                                    <div class="dropzone" fileDragDrop (filesChangeEmiter)="onDrop($event, Constant.DOC_TYPE_ATTACHMENT)">
+                                        <div class="text-wrapper">
+                                        <div class="centered">
+                                            <input type="file" name="file1" id="file1" (change)="onSelectFile($event, Constant.DOC_TYPE_ATTACHMENT)">
+                                            <label for="file1">
+                                            <span class="textLink">
+                                                Select your file <i class="fa fa-spinner fa-spin" *ngIf="uploadingToggle"></i>
+                                            </span> or Drop it here!</label>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <small class="text-danger mb-2 d-block" *ngIf="fileForm.submitted && fileUrlErrorMessage">Please upload image</small>
+                                </div> -->
+
+                                <div class="col-lg-9">
+
+                                    <div class="dropzone" fileDragDrop (filesChangeEmiter)="onDrop($event, Constant.DOC_TYPE_ATTACHMENT)" *ngIf="!uploadingToggle && Constant.EMPTY_STRINGS.includes(attachment.fileName)">
+                                      <div class="dropzoneLabel">
+                                        <input type="file" name="file1" id="file1" (change)="onSelectFile($event, Constant.DOC_TYPE_ATTACHMENT)">
+                                        <label for="file1" class="dropzoneLabelinner">
+                                          <div *ngIf="!uploadingToggle && Constant.EMPTY_STRINGS.includes(attachment.fileName)">
+                                            <i class="bi bi-cloud-upload"></i>
+                                          <p class="mb-0">
+                                            <span class="pointer">Browse</span> files to upload or drag and drop it here
+                                          </p>
+                                          </div>
+                                        </label>
+                                      </div>
+                                    </div>
+                  
+                                    <div class="dropzoneUploading" *ngIf="uploadingToggle">
+                                        <div class="Uploadingcounter position-relative" [ngClass]="{'Uploadingdone':!Constant.EMPTY_STRINGS.includes(attachment.fileName)}">
+                                        {{progress | number : '1.0-0'}}%
+                                        </div>
+                                        <p *ngIf="progress>=0 && progress<30">Fetching Data</p>
+                                        <p *ngIf="progress>=30 && progress<60">Fetching Issue Date</p>
+                                        <p *ngIf="progress>=60 && progress<90">Fetching Expiration Date</p>
+                                        <p *ngIf="progress>=90 && progress<100">Fetching Required Information</p>
+                                        <p *ngIf="progress==100">Done</p>
+                                    </div>
+                  
+                                    <div class="uplodedIconbox" *ngIf="!uploadingToggle && !Constant.EMPTY_STRINGS.includes(attachment.fileName)">
+                                      <div class="uplodedIconinner position-relative">
+                                        <div class="uplodedIcon position-relative">
+                                          <i class="bi bi-file-earmark-text"></i>
+                                          <span class="pointer"><i class="bi bi-trash3" (click)="resetUpload()"></i></span>
+                                        </div>
+                                      </div>
+                                      <span>{{attachment.fileName}}</span>
+                                    </div>
+                  
+                                    <small class="text-danger mb-2 d-block" *ngIf="fileForm.submitted && fileUrlErrorMessage">Please upload Image</small>
+                                  
+                                </div> 
+                               
+                
+                                <div class="col-lg-12 px-2 mb-4">
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Type<sup>*</sup></label>
+                                        <!-- <input type="text" placeholder="Enter First Name" class="form-control"> -->
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group mdlform mb-3">
+                                        <div class="position-relative selectclose">
+                                            <i class="bi bi-x-lg pointer"></i>
+                                            <angular2-multiselect id="fileDocType" name="fileDocType" [data]="docFileType" [settings]="dropdownSettingsdocumentfileType" [(ngModel)]="selectedfileDocType" #taxIdSelectBox="ngModel" (ngModelChange)="selectFileDocType($event)" required>
+                                            </angular2-multiselect>
+                                            <small *ngIf="fileForm.submitted && invalidFileForm && Constant.EMPTY_STRINGS.includes(attachment.fileType)" style="color: red;">Select Document Type!</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Issue Date<sup>*</sup></label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="issueflex">
+                                        <div class="form-group mdlform">
+                                            <input type="date" onkeydown="return false" placeholder="MM/DD/YYYY" [disabled]="disableIssueDateField" class="form-control" name="issueDt" [required]="!disableIssueDateField" [(ngModel)]="attachment.issueDate" (ngModelChange)="setMinExpirationDate()"/>
+                                        </div>
+                                        <div class="align-items-center d-flex form-check gap-2">
+                                            <input type="checkbox" [checked]="disableIssueDateField" value="" id="flexCheckChecked1" class="form-check-input mt-0" (click)="deSelectIssueField($event)" />
+                                            <label for="" class="form-check-label pointer">
+                                                NA
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Expiration Date<sup>*</sup></label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="issueflex">
+                                        <div class="form-group mdlform">
+                                            <input type="date" onkeydown="return false" placeholder="MM/DD/YYYY" class="form-control" name="exDt" [disabled]="disableExpDateField" [required]="!disableExpDateField" [(ngModel)]="attachment.expirationDate" [min]="minExpirationDate" />
+                                        </div>
+                                        <div class="align-items-center d-flex form-check gap-2">
+                                            <input type="checkbox" [checked]="disableExpDateField" value="" id="flexCheckChecked2" class="form-check-input mt-0" (click)="deSelectExpField($event)" />
+                                            <label for="" class="form-check-label pointer">
+                                                NA
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="align-items-center d-flex form-check gap-2 mb-3" *ngIf="!expirationDateToggle && !issueDateToggle">
+                                        <input type="checkbox" value="" id="flexCheckChecked3" class="form-check-input mt-0" [checked]="attachment.isTrackable == 1" (click)="isTrackable($event)" />
+                                        <label for="flexCheckChecked3" class="form-check-label pointer">
+                                            Track this document under expirables?
+                                        </label>
+                                    </div>
+                                    <div *ngIf="attachment.isTrackable == 1">
+                                        <app-state-dropdown [_updatedStateName]="attachment.stateName" [_updatedStateCode]="attachment.stateCode" [(stateCodeProp)]="attachment.stateCode" [(stateNameProp)]="attachment.stateName" [stateNameLabelClass]="'fw-medium'" [stateCodeLabelClass]="'fw-medium'"
+                                            [stateNameDynamic]="'State Name'" [stateCodeDynamic]="'State Code'" [stateNameClass]="'col-12'" [stateCodeClass]="'d-none'" [cityClass]="'d-none'">
+                                        </app-state-dropdown>
+                                        <small class="d-block" *ngIf="fileForm.submitted && invalidFileForm && Constant.EMPTY_STRINGS.includes(attachment.stateName)" style="color: red; margin-top: -10px; margin-bottom: 10px;">Select State!</small>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Description</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="form-group mdlform mb-3">
+                                        <textarea placeholder="Write a Description" class="form-control" name="desc" [(ngModel)]="attachment.description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-top-0 pt-0 justify-content-end pb-0">
+                                <button type="button" class="btn primarycancelbtn" data-bs-dismiss="modal" style="border-color: #f05252 !important" (click)="docAttachmentclose()">
+                                    Close
+                                </button>
+                                <button type="submit" [disabled]="fileCreateToggle" class="btn fileupldbtn">
+                                    Add
+                                    <i class="fa fa-spinner fa-spin" *ngIf="fileCreateToggle"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Doc Vault -->
+</div>
+
+<!--delete modal-->
+<button type="button" class="d-none" id="deleteModalButton" #deleteModalButton data-bs-toggle="modal" data-bs-target="#deleteModal"></button>
+<div class="modal blur-bg-2" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="profilCreatemodal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" *ngIf="deleteContentType == 'On-going Monitoring'">
+            <div class="modal-body text-center">
+                <img src="assets/images/bin.png" style="width: 10%; margin-bottom: 15px" class="img-sm" />
+                <h4 class="modal-title w-100">Are you sure want to delete it?</h4>
+                <p></p>
+                <small class="pt-2 mt-2">
+                    On-going Monitoring will be deleted permanently. Are you sure you want to delete this record?
+                </small>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" data-bs-dismiss="modal" class="btn btnmarkdelete" (click)="deleteOngoingMointoring()">
+                    Yes Delete It
+                </button>
+                <button type="button" class="btn btnmarkcancel" id="deleteModalCloseButton" #deleteModalCloseButton data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-content" *ngIf="deleteContentType == 'Expirable'">
+            <div class="modal-body text-center">
+                <img src="assets/images/bin.png" style="width: 10%; margin-bottom: 15px" class="img-sm" />
+                <h4 class="modal-title w-100">Are you sure want to delete it?</h4>
+                <p></p>
+                <small class="pt-2 mt-2">Expirabel monitoring will turned off. Are you sure you want to delete
+                    this record?</small>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" data-bs-dismiss="modal" class="btn btnmarkdelete" (click)="deleteOnExpirable()">
+                    Yes Delete It
+                </button>
+                <button type="button" class="btn btnmarkcancel" id="deleteModalCloseButton" #deleteModalCloseButton data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-content" *ngIf="deleteContentType == 'Shared Document'">
+            <div class="modal-body text-center">
+                <img src="assets/images/bin.png" style="width: 10%; margin-bottom: 15px" class="img-sm" />
+                <h4 class="modal-title w-100">Are you sure want to delete it?</h4>
+                <p></p>
+                <small class="pt-2 mt-2">
+                    If you delete this record, user can't be access this document. 
+                    Are you sure, you want to delete this record?
+                </small>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" data-bs-dismiss="modal" class="btn btnmarkdelete" (click)="deleteSharedDoc()">
+                    Yes Delete It
+                </button>
+                <button type="button" class="btn btnmarkcancel" id="deleteModalCloseButton" #deleteModalCloseButton data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- view on going monitoring -->
+<div class="modal blur-bg-2" id="viewEditmodaOn" tabindex="-1" aria-labelledby="viewEditmodaOn" aria-hidden="true">
+    <div class="modal-dialog modal-custom modal-dialog-centered">
+        <div class="modal-content">
+            <div class="custom-modal-header d-flex justify-content-between align-items-center">
+                <div><b>Review Details</b></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="rolemodalinner">
+                    <p class="titleform mb-2"></p>
+                    <div class="row px-1 mb-2">
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner">
+                                <p class="mb-0">Name</p>
+                                <h3>{{ selectedMonitoring.database }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner border-0">
+                                <p class="mb-0">Frequency</p>
+                                <h3>{{ selectedMonitoring.frequency }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row px-1">
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner">
+                                <p class="mb-0">Monitoring</p>
+                                <h3>
+                                    <span *ngIf="selectedMonitoring.isMonitoring == 1">True</span>
+                                    <span *ngIf="selectedMonitoring.isMonitoring == 0">False</span>
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 px-2">
+                            <div class="providerdetailsinner border-0">
+                                <p class="mb-0">Next Check</p>
+                                <h3>
+                                    {{ selectedMonitoring.nextCheckDate | date : "MM-dd-yyyy" }}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal -->
+<button type="button" class="d-none btn btn-primary" id="shareModalButton" #shareModalButton data-bs-toggle="modal" data-bs-target="#shareModal"></button>
+<div class="modal blur-bg-2" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="min-width: 520px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Sharing {{shareSelectedDocName}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="!sharingToggle">
+                    <form #shareDocForm="ngForm" ngNativeValidate (ngSubmit)="createDocumentShare()">
+                        <div class="row">
+
+                            <div class="col-md-12 mb-2">
+                                <div class="shareOutermdl position-relative">
+                                    <div class="shareinnermdl">
+                                        <p>
+                                            This is a protected document, enter the <span>email address</span> or <span>phone number</span> 
+                                            of the person to whom you want to grant access of the document.
+                                        </p>
+                                        <div class="shareinnermdlrow d-flex">
+                                            <div class="shareFieldCol position-relative iconSharecol">
+                                                <angular2-multiselect class="shareDropdown iconShare" id="selectBox" name="selectBox" [data]="typeList" [settings]="dropdownSettingsType" 
+                                                [(ngModel)]="selectedType" #selectBox="ngModel" (ngModelChange)="selectType($event)">
+                                                </angular2-multiselect>
+                                                <div class="iconSharecolicons" *ngIf="selectedOption == 'Mail' || selectedOption == 'Phone'">
+                                                    <i class="bi bi-envelope" *ngIf="selectedOption == 'Mail' "></i>
+                                                    <i class="bi bi-telephone" *ngIf="selectedOption == 'Phone'"></i>
+                                                </div>
+                                                
+                                            </div>
+                                            <div class="shareinputCol">
+                                                <div class="shareinputColInner d-flex">
+                                                    <div class="shareinputCountrycode" *ngIf="selectedOption == 'Phone'">
+                                                        <angular2-multiselect class="shareDropdown" name="countryCodeList" id="countryCodeSelect" required [settings]="dropdownSettingsCountryCode" 
+                                                        [data]="countryCodeList" #countryCodeSelect="ngModel" [(ngModel)]="countryCode" (ngModelChange)="selectCountryCode($event)">
+                                                        </angular2-multiselect>
+                                                    </div>
+                                                    <div class="shareinputbx">
+                                                        <div class="shareinputMail" *ngIf="selectedOption == 'Mail'">
+                                                            <input type="email" name="email" [(ngModel)]="email" required placeholder="eg: Johndoe@gmail.com" class="form-control">
+                                                        </div>
+                                                        <div class="shareinputPhone" *ngIf="selectedOption == 'Phone'">
+                                                            <input type="text" name="phone" [(ngModel)]="email" required placeholder="eg: (555) 555-1234" mask="(000)-000-0000" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="shareinputColerror">
+                                                    <small class="mt-2" style="color: red" *ngIf="errorToggle">{{errorMessage}}</small>
+                                                    <small style="color: red" *ngIf="shareDocForm.submitted && (selectedCountryCode == undefined || selectedCountryCode == null || selectedCountryCode == '') && invalidToggle">
+                                                        Select your country code
+                                                    </small>
+                                                    <small class="mt-2" style="color: red" *ngIf="errorToggle">This phone number is disabled by you,please enable it to send url !!</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <!-- <div *ngIf="createToggle"> -->
+                                    <div *ngIf="createToggle">
+                                        <div class="shareLoader">
+                                            <img src="assets/images/shareloader.gif" alt="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="modal-footer border-top-0 p-0 justify-content-between mt-1">
+                            <!-- <button type="button" data-bs-dismiss="modal" class="btn primarybackebtn m-0"> 
+                                Back 
+                            </button>
+                            <button type="submit" class="btn primarynextebtn m-0">
+                                Next <i class="fa fa-spinner fa-spin" *ngIf="createToggle"></i>
+                            </button> -->
+                            <button type="submit" class="btn fileupldbtn m-0 w-100" [disabled]="email.length==0" >
+                                Send <i class="bi bi-arrow-right"></i> 
+                            </button>
+                            
+                        </div>
+                    </form>
+                </div>
+                <div *ngIf="sharingToggle">
+                    <div class="shareOutermdl">
+                    <div class="sharIconsrow">
+                        <div class="sharIcons text-center" (click)="shareOnWhatsApp()">
+                            <span class="pointer" style="background-color:#25D366">
+                                <i class="bi bi-whatsapp"></i>
+                            </span>
+                            <p class="mb-0">Whats App</p>
+                        </div>
+                        <div class="sharIcons text-center" (click)="shareOnGmail()">
+                            <span class="pointer" style="background-color:#484848">
+                                <i class="bi bi-envelope-fill"></i>
+                            </span>
+                            <p class="mb-0">Mail</p>
+                        </div>
+                    </div>
+                    <div class="shareSeprator">
+                        <p class="mb-0">or</p>
+                    </div>
+                    
+    
+                    <div class="shareUrlBox">
+                        <div class="shareUrlBoxinput">
+                            <input type="text" disabled [placeholder]="fileUrl" class="form-control">
+                        </div>
+                        <button class="shareUrlbtn" (click)="copy()" type="button">
+                            <i class="bi bi-files" *ngIf="!copying"></i> 
+                            <span *ngIf="!copying">Copy this link</span>
+                            <span *ngIf="copying">Copied</span>
+                        </button>
+                    </div>
+                </div>
+                    <!-- <div class="modal-footer border-top-0 p-0 justify-content-between">
+                        <button type="button" data-bs-dismiss="modal" class="btn primarybackebtn m-0"> 
+                            Back 
+                        </button>
+                        <button type="submit" class="btn primarynextebtn m-0">Next</button>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- show image modal -->
+<div class="modal blur-bg-2" id="showImageModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:80%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">On-going Monitoring Snapshot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" style="overflow: scroll;min-height: 350px;">
+                <img [src]="selectedImage" alt="" />
+            </div>
+        </div>
+    </div>
+</div>

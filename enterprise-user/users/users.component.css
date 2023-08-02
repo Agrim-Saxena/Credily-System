@@ -1,0 +1,192 @@
+.main {
+  padding: 1.3rem 1rem 2rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  display: none;
+}
+.breadcrumb-bx .breadcrumb-item i {
+  font-size: 10px;
+  margin-left: 10px;
+}
+
+.breadcrumb-bx .breadcrumb-item {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: #374151;
+}
+.roletitlemain {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 0px 0 15px;
+  margin-bottom: 20px;
+}
+.pagetitle h3 {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 26px;
+  color: #3d3d3d;
+}
+.pagetitle p {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+}
+.usrtblesearch i {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  font-size: 14px;
+  color: #b0adab;
+}
+.usrtblesearch input {
+  padding-left: 35px;
+}
+
+.usertableinner .table th {
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 20px;
+  color: #3e3e3c;
+  background-color: #fafaf9;
+  box-shadow: 0px 2px 0px #dddbda;
+}
+.usertableinner .table td {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: #3e3e3c;
+}
+
+.usertableinner .table th,
+.usertableinner .table td {
+  vertical-align: middle;
+  padding: 12px 12px;
+}
+.usertableinner tbody {
+  border: 1px solid #f0f0f0;
+  border-top: 0;
+}
+.usertableinner thead {
+  border: 1px solid #fafaf9;
+}
+.badge-grey {
+  background: #f3f4f6;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  color: #111928;
+}
+.actiontable {
+  gap: 15px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+}
+.actiontable span {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.form-group label {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #111928;
+  margin-bottom: 5px;
+}
+.rolemodalinner {
+  border-width: 1px 0px 1px 0px;
+  border-color: #e5e7eb;
+  border-style: solid;
+  padding: 1rem 0 0.5rem;
+}
+.rolemodalinner > h3 {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 26px;
+  color: #1f2a37;
+  margin-bottom: 15px;
+}
+
+.mdlform .form-control {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  color: #706e6b;
+  height: 36px;
+  box-shadow: none !important;
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+.accessoption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 1rem 0 1rem;
+}
+.accessoption:last-child {
+  border-bottom: 0px solid #f3f4f6;
+  padding: 1rem 0 1rem;
+}
+.accessoption:first-child {
+  padding: 0rem 0 1rem;
+}
+.accesstitle p {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 21px;
+  color: #000000;
+}
+.accesspermissioninner .form-check {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.accesspermissioninner .form-check label {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 20px;
+  color: #374151;
+}
+.accesspermissioninner .form-check .formradiocheck {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #9ca3af;
+  text-align: center;
+  font-size: 10px;
+  border-radius: 50%;
+  line-height: 19px;
+  margin-right: 5px;
+  transition: 0.1s linear;
+  color: #fff;
+}
+.accesspermissioninner
+  .form-check
+  input[type="radio"]:checked
+  ~ .formradiocheck {
+  background-color: #0070d2;
+  border: 1px solid #0070d2;
+  filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.12));
+}
+.accesspermissioninner {
+  gap: 15px;
+}
+
+.userdetails p {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #111928;
+  min-width: 150px;
+}
+.userdetails p:last-child {
+  font-weight: 300;
+  margin-left: 5px;
+}

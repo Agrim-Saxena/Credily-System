@@ -1,0 +1,322 @@
+<div class="container-fluid">
+    <div class="main">
+        <div class="roletitlemain">
+            <div class="breadcrumb-bx">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-2">
+                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Expirables</a> <i class="fa-solid fa-chevron-right"></i></li>
+                        <li class="breadcrumb-item active pointer">
+                            All Expirables by Provider
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- <div class="pagetitle">
+          <h3>Users</h3>
+          <p>
+            Lorem Ipsum diam maecenas sed enim ut sem viverra aliquet eget sit
+            amet tellus cras adipiscing enim eu turpis egestas pretium aenean
+            pharetra magna ac placerat vestibulum lectus mauris ultrices eros in
+            cursus turpis massa tincidunt dui ut ornare lectus sit amet est
+            placerat in egestas erat imperdiet sed euismod nisi porta.
+          </p>
+        </div> -->
+        </div>
+
+        <div class="usertablemain">
+            <div class="row justify-content-between align-items-center" *ngIf="enableSearch">
+                <div class="col-lg-3 px-2">
+                    <div class="form-group usrtblesearch position-relative">
+                        <input type="text" placeholder="Search User" class="form-control" [(ngModel)]="databaseHelper.search" (ngModelChange)="this.expirableSearch.next($event)" />
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <!-- <i class="fa-solid fa-xmark pointer" style=" padding-left: 16rem;" *ngIf="databaseHelper.search.length>0" (click)="databaseHelper.search=''; getAllExpirables()"></i> -->
+                    </div>
+                </div>
+                <!-- <div class="col-lg-2 pl-2 pr-0">
+                    <div class="text-end">
+                    <button type="button" class="btn primarybtn" data-bs-toggle="modal" data-bs-target="#createUsermodal">
+                        Create New User
+                    </button>
+                    </div>provider 
+                </div> -->
+            </div>
+
+            <div class="expiretblactnbtns" *ngIf="enableSearch">
+                <div class="tlbctnbtnsinner d-flex align-items-center">
+                    <p class="mb-0 bg-success pointer text-white" (click)="toggleCartFunc('upToDate')">
+                        <i class="bi bi-check2"></i> All Credentials Up to Date
+                        <span>{{upToDate}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                    <p class="mb-0 bg-warning pointer text-black" (click)="toggleCartFunc('aboutToExpire')">
+                        <i class="bi bi-exclamation-triangle"></i> At least one credential expiring in 90 days.
+                        <span>{{aboutToExpire}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                    <p class="mb-0 bg-danger pointer text-white" (click)="toggleCartFunc('expired')">
+                        <i class="bi bi-x-circle"></i> At least one credential expired.
+                        <span>{{expired}}</span>
+                        <i class="bi bi-eye"></i>
+                    </p>
+                </div>
+            </div>
+            <div class="usertable mt-3 ">
+
+                <div class="usertableinner no-wrap table-responsive">
+                    <!-- <app-circular-loader *ngIf="expirableLoadingToggle && Constant.EMPTY_STRINGS.includes(credentialType)"></app-circular-loader> -->
+
+                    <table class="table">
+
+                        <thead *ngIf="enableSearch">
+                            <tr>
+                                <th style="width:7%">
+                                    <span *ngIf="!nameFilterToggle" (click)="filterByName()" style="cursor: pointer;">
+                                        Provider Name 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedProvider.length == 0"></i>
+                                        <i *ngIf="selectedProvider.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedProvider.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="nameFilterToggle" id="taxIdSelectBox" name="taxIdSelectBox" [data]="providerNameList" [settings]="dropdownSettingsName" [(ngModel)]="selectedProvider" #taxIdSelectBox="ngModel" (onClose)="getAllExpirables()" required>
+                                    </angular2-multiselect>
+                                    <!-- <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90" *ngIf="databaseHelper.sortBy!='provider'" (click)="sort('provider','asc')"></i>
+                                    <i class="fa-solid fa-arrow-up" *ngIf="databaseHelper.sortBy=='provider' && databaseHelper.sortOrder=='desc'" (click)="sort('provider','asc')"></i>
+                                    <i class="fa-solid fa-arrow-down"*ngIf="databaseHelper.sortBy=='provider' && databaseHelper.sortOrder=='asc'" (click)="sort('provider','desc')" ></i> -->
+                                </th>
+                                <th style="width: 7%;">
+                                    <span *ngIf="!specialtyFilterToggle" (click)="filterBySpecialty()" style="cursor: pointer;">
+                                        Specilaty 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedSpecialty.length == 0"></i>
+                                        <i *ngIf="selectedSpecialty.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedSpecialty.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="specialtyFilterToggle" id="taxIdSelectBox" name="taxIdSelectBox" [data]="specialtyList" [settings]="dropdownSettingsSpecialty" [(ngModel)]="selectedSpecialty" #taxIdSelectBox="ngModel" (ngModelChange)="selectSpecialty($event)"
+                                        required>
+                                    </angular2-multiselect>
+                                </th>
+                                <th style="width: 3%;">Location</th>
+                                <th style="width: 1%;">NPI Number</th>
+                                <th style="width: 3%;">Phone</th>
+                                <th style="width: 1%;">Email</th>
+                                <th style="width: 1%;">
+                                    <span *ngIf="!stateFilterToggle" (click)="filterByState()" style="cursor: pointer;">
+                                        State 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedStateName.length == 0"></i>
+                                        <i *ngIf="selectedStateName.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedStateName.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="stateFilterToggle" id="stateSelectBox" name="stateSelectBox" [data]="stateNameList" [settings]="dropdownSettingsStateName" [(ngModel)]="selectedStateName" #stateSelectBox="ngModel" (onClose)="getAllExpirables()" required>
+                                    </angular2-multiselect>
+                                    <!-- State
+                                    <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90"*ngIf="databaseHelper.sortBy!='state'"  (click)="sort('state','asc')"></i>
+                                    <i class="fa-solid fa-arrow-up" *ngIf="databaseHelper.sortBy=='state' && databaseHelper.sortOrder=='desc'" (click)="sort('state','asc')"></i>
+                                    <i class="fa-solid fa-arrow-down"*ngIf="databaseHelper.sortBy=='state' && databaseHelper.sortOrder=='asc'" (click)="sort('state','desc')" ></i> -->
+                                </th>
+                                <th style="width: 7%;">
+                                    <span *ngIf="!statusFilterToggle" (click)="filterByStatus()" style="cursor: pointer;">
+                                        Status 
+                                        <i class="fa-solid fa-filter" *ngIf="selectedStatus.length == 0"></i>
+                                        <i *ngIf="selectedStatus.length > 0" class="fa-solid fa-filter">
+                                            <sup class="filterActive">{{selectedStatus.length}}</sup>
+                                        </i>
+                                    </span>
+                                    <angular2-multiselect *ngIf="statusFilterToggle" id="stateSelectBox" name="stateSelectBox" [data]="statusList" [settings]="dropdownSettingsStatus" [(ngModel)]="selectedStatus" #stateSelectBox="ngModel" (ngModelChange)="selectStatus($event)" required>
+                                    </angular2-multiselect>
+                                    <!-- <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90"*ngIf="databaseHelper.sortBy!='status'"  (click)="sort('status','asc')"></i>
+                                    <i class="fa-solid fa-arrow-up" *ngIf="databaseHelper.sortBy=='status' && databaseHelper.sortOrder=='desc'" (click)="sort('status','asc')"></i>
+                                    <i class="fa-solid fa-arrow-down"*ngIf="databaseHelper.sortBy=='status' && databaseHelper.sortOrder=='asc'" (click)="sort('status','desc')" ></i> -->
+                                </th>
+                                <!-- <th style="width: 8%">Action</th> -->
+                            </tr>
+                        </thead>
+
+                        <tbody *ngIf="!expirableLoadingToggle">
+                            <tr *ngFor="let obj of expirableList">
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0 pointer" (click)="routeToProviderDashboard(obj.provider.uuid)">
+                                            <span [ngClass]="{'statusdotgreen':obj.provider.expirableStatus==Constant.up_To_Date, 'statusdotyellow':obj.provider.expirableStatus==Constant.about_To_Expire ,'statusdotred':obj.provider.expirableStatus==Constant.expired}"></span>                                            {{obj.provider.firstName}} {{obj.provider.lastName}}
+                                        </p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.specialty}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.addressLine1}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <!-- <span class="statusactive textWrap">{{obj.provider.npi}}</span> -->
+                                        <span class="badge-grey textWrap">{{obj.provider.npi}}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.phone | mask:'(000)-000-0000' }}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.provider.email}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <p class="mb-0">{{obj.stateName}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo textWrap">
+                                        <div class="statusdesc">
+                                            <span [ngClass]="{'statusdotgreen':obj.provider.expirableStatus==Constant.up_To_Date, 'statusdotyellow':obj.provider.expirableStatus==Constant.about_To_Expire ,'statusdotred':obj.provider.expirableStatus==Constant.expired}"></span>  
+                                            last updated : 
+                                            <span *ngIf="!Constant.EMPTY_STRINGS.includes(obj.updatedDate)">{{obj.updatedDate | date:'MM-dd-yyyy hh:mm' : 'EST'}} (EST)</span>
+                                            <span *ngIf="Constant.EMPTY_STRINGS.includes(obj.updatedDate)">Not Update Yet!</span>
+                                        </div>
+                                        <p class="mb-0">
+                                            <span [ngClass]="{'statusdotgreen':obj.provider.expirableStatus==Constant.up_To_Date, 'statusdotyellow':obj.provider.expirableStatus==Constant.about_To_Expire ,'statusdotred':obj.provider.expirableStatus==Constant.expired}"></span>  
+                                            last updated : 
+                                            <span *ngIf="!Constant.EMPTY_STRINGS.includes(obj.updatedDate)">{{obj.updatedDate | date:'MM-dd-yyyy hh:mm' : 'EST'}} (EST)</span>
+                                            <span *ngIf="Constant.EMPTY_STRINGS.includes(obj.updatedDate)">Not Update Yet!</span>
+                                        </p>
+                                    </div>
+                                </td>
+                                <!-- <td>
+                                    <div class="actiontable d-flex align-items-center">
+                                        <span class="text-primary pointer pdependent">Manage</span>
+                                    </div>
+                                </td> -->
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    <app-circular-loader *ngIf="expirableLoadingToggle && Constant.EMPTY_STRINGS.includes(credentialType)"></app-circular-loader>
+                    <div class="nodatafoundbox text-center" *ngIf="!expirableLoadingToggle && expirableList.length==0">
+                        <img src="assets/images/allexpirable.svg" style="width: 20%; margin-top: 8%;" alt="no data found" />
+                        <h6 class="mt-2 text-muted" style="margin-left: 5%; margin-top: 1%;">No data found</h6>
+                    </div>
+                </div>
+
+
+                <div class="paginationmain" *ngIf="totalItemsCount>0 && !expirableLoadingToggle">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <p class="currentshowing mb-0">
+                            Showing <span>{{expirableList.length}}</span> of <span>{{totalItemsCount}}</span>
+                        </p>
+                        <div class="col-lg-6">
+                            <div class="card-body d-flex justify-content-end">
+                                <ngb-pagination [collectionSize]="totalItemsCount" [rotate]="true" (pageChange)="pageChanged($event)" [pageSize]="databaseHelper.itemsPerPage" [(page)]="databaseHelper.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                                </ngb-pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modals -->
+
+<!-- fixed Expirable details -->
+<div class="expiredmain" [ngClass]="{'expiredmainslide':cartToggle==true}">
+    <div class="expiredinner">
+        <div class="backbtn">
+            <i class="bi bi-chevron-left" (click)="togglecloseCartFunc()"></i>
+        </div>
+        <div class="expiredinnertiitle">
+            <h4 *ngIf="credentialType==Constant.expired"><span class="statusdotred"></span>Expired</h4>
+            <h4 *ngIf="credentialType==Constant.about_To_Expire"><span class="statusdotyellow"></span>About to Expire</h4>
+            <h4 *ngIf="credentialType==Constant.up_To_Date"><span class="statusdotgreen"></span>Up to Date</h4>
+        </div>
+        <div class="expiredinnertable">
+
+            <app-circular-loader *ngIf="expirableLoadingToggle2"></app-circular-loader>
+            <div class="empty-notific" *ngIf="!expirableLoadingToggle2 && expirableTypeLists.length == 0">
+                <div class="empty-notificinner">
+                    <div class="empty-notificinnerimg">
+                        <img src="assets/images/allexpirable.svg" alt="" style="width: 20%; margin-top: 8%;">
+                    </div>
+                    <h5 class="mt-2 text-muted" style="margin-left: 5%; margin-top: 1%;">No data found</h5>
+                </div>
+            </div>
+            <div class="usertableinner table-responsive mb-3 " style="height: 70vh; overflow-y: scroll;" *ngIf="!expirableLoadingToggle2 && expirableTypeLists.length > 0">
+                <table class="table" *ngIf="!expirableLoadingToggle2 && expirableTypeLists.length > 0">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%" *ngIf="credentialType != 'upToDate'">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox" [checked]="isAllSelected" (click)="selectAll()">
+                                <label class="form-check-label ms-2" for="inlineCheckbox1">Select All</label>
+                            </th>
+                            <th style="width: 30%">Provider Name <i class="fa-solid fa-arrow-right-arrow-left fa-rotate-90"></i></th>
+                            <th style="width: 20%">Credential</th>
+                            <th style="width: 20%">Expiration Date</th>
+                            <th style="width: 10%">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let obj of expirableTypeLists; let i =index ">
+                            <td *ngIf="credentialType != 'upToDate'">
+                                  <input class="form-check-input" type="checkbox" [checked]="obj.isChecked" id="inlineCheckbox1{{i}}" value="option1{{i}}" (click)="selectOne(obj)">
+                            </td>
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0 pointer">
+                                        <!-- <span class="statusdotred"></span> -->
+                                        <span [ngClass]="{'statusdotgreen':obj.expirationCount==0,'statusdotyellow':obj.expirationCount==1,'statusdotred':obj.expirationCount==2}"></span> {{obj.provider.firstName}} {{obj.provider.lastName}}
+                                    </p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0">{{obj.docType}}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="tableinfo">
+                                    <p class="mb-0">{{obj.expirationDate | date : "MM-dd-yyyy"}}</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actiontable d-flex align-items-center">
+                                    <span class="text-primary pointer">Manage</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div *ngIf="(!expirableLoadingToggle2 && expirableTypeLists.length != 0 && credentialType != 'upToDate') && (isAllSelected || ids.length>0)">
+                    <button type="button" id="notificationbtn" class="btn btn-primary float-end" (click)="sendProviderNotification()" [ngClass]="{'scndrysmbtn':notificationSent, 'primarysmbtn':!notificationSent}" [disabled]="sendingNotification || notificationSent">
+                        <span *ngIf="!notificationSent">Send Notification <i class="fa fa-spinner fa-spin" *ngIf="sendingNotification"></i> </span>
+                        <span *ngIf="notificationSent">Notification Sent ! <img width="20px" src="assets/gif/tick-mark.gif" alt="success"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="paginationmain" *ngIf="!expirableLoadingToggle2 && expirableTypeLists.length > 0">
+                <div class="d-flex align-items-center justify-content-between">
+                    <p class="currentshowing mb-0">
+                        Showing <span>{{expirableTypeLists.length}}</span> of <span>{{totalItemsCount2}}</span>
+                    </p>
+                    <div class="col-lg-6">
+                        <div class="card-body d-flex justify-content-end">
+                            <ngb-pagination [collectionSize]="totalItemsCount2" [rotate]="true" (pageChange)="pageChangedFilter($event)" [pageSize]="databaseHelper2.itemsPerPage" [(page)]="databaseHelper2.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

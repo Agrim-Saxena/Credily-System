@@ -1,0 +1,1056 @@
+<div class="container-fluid">
+    <div class="main">
+        <div class="roletitlemain">
+            <div class="pagetitle">
+                <h3>Clients</h3>
+            </div>
+        </div>
+
+        <div class="usertablemain">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-lg-3 px-2">
+                    <div class="form-group usrtblesearch position-relative">
+                        <!-- <input type="text" placeholder="Search Clients" class="form-control" [(ngModel)]="clientDatabaseHelper.search" (ngModelChange)="this.clientSearch.next($event)"/> -->
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <!-- <i class="fa-solid fa-xmark pointer" style=" padding-left: 16rem;" *ngIf="clientDatabaseHelper.search.length>0" (click)="resetSearchClient()"></i> -->
+                    </div>
+                </div>
+                <div class="col-lg-2 pl-2 pr-0">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <button type="button" class="btn primarybtn" (click)="openCreateClientModel()"> Create New Clients </button>
+                    </div>
+                </div>
+            </div>
+            <div class="usertable mt-3">
+                <div class="usertableinner table-responsive">
+                    <app-circular-loader *ngIf="loadClientListToggle"></app-circular-loader>
+                    <div class="nodatafoundbox text-center" *ngIf="!loadClientListToggle && allClientList.length==0">
+                        <img src="assets/images/allexpirable.svg" style="width: 20%;" alt="no data found" />
+                        <h5 class="mt-4 text-muted">No data found</h5>
+                    </div>
+                    <table class="table" *ngIf="allClientList.length>0 && !loadClientListToggle">
+                        <thead>
+                            <tr>
+                                <th style="width:5%">ID<i class="fa-solid fa-arrow-down-long"></i></th>
+                                <th style="width: 15%">Client Name</th>
+                                <th style="width: 25%">Primary Location</th>
+                                <th style="width: 10%">Status</th>
+                                <th style="width: 15%">Owner</th>
+                                <th style="width: 20%">Date Created</th>
+                                <th style="width: 20%" class="text-center">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let obj of allClientList;let i=index">
+                                <td>
+                                    <div class="tableinfo">
+                                        <p class="mb-0">{{ clientDatabaseHelper.currentPage * i+1}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <p class="mb-0">{{obj.legalBusinessName}}</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <p class="mb-0" *ngIf="obj.clientBusinessLocation != null">{{obj.clientBusinessLocation}}</p>
+                                        <p class="mb-0" *ngIf="obj.clientBusinessLocation == null">N/A</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <span class="statusactive">Active</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <angular2-multiselect name="owner{{i}}" [settings]="dropdownSettingsOwner" [data]="ownerList" (keyup)="searchOwner(i,$event)" [(ngModel)]="allClientList[i].selectedOwner" #ownerSelectList="ngModel" (ngModelChange)="selectOwner(i,$event)">
+                                        </angular2-multiselect>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <span class="badge-grey" *ngIf="obj.createdDate != null">{{obj.createdDate | date:'MM-dd-yyyy hh:mm:ss a' : 'EST'}} (EST)</span>
+                                        <span class="badge-grey" *ngIf="obj.createdDate == null">N/A</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="tableinfo">
+                                        <div class="actiontable d-flex align-items-center justify-content-center">
+                                            <span class="text-primary pointer" (click)="viewClientDetail(obj)">View</span>
+                                            <span class="text-success pointer" (click)="openEditModuleModel(obj)">Edit</span>
+                                            <span class="text-danger pointer" (click)="openClientDeleteModal(obj)">Delete</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="paginationmain" *ngIf="totalItems>0">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <p class="currentshowing mb-0">
+                            Showing <span>{{allClientList.length}}</span> of <span>{{totalItems}}</span>
+                        </p>
+
+
+
+                        <div class="col-lg-6">
+                            <div class="card-body d-flex justify-content-end">
+                                <ngb-pagination [collectionSize]="totalItems" [rotate]="true" (pageChange)="pageChanged($event)" [pageSize]="clientDatabaseHelper.itemsPerPage" [(page)]="clientDatabaseHelper.currentPage" [maxSize]="5" [boundaryLinks]="true">
+                                </ngb-pagination>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modals -->
+<!-- Button trigger modal -->
+
+
+<!-- Modal Edit-->
+
+<button type="button" class="btn btn-primary d-none" #createModelButton data-bs-toggle="modal" data-bs-target="#profilEditmodal">Launch demo modal</button>
+
+<div class="modal blur-bg-2" data-bs-backdrop="static" data-bs-keyboard="false" id="profilEditmodal" tabindex="-1" aria-labelledby="profilEditLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-custom">
+        <div class="modal-content">
+            <div class="custom-modal-header d-flex justify-content-between align-items-center">
+                <!-- <h1 class="modal-title" id="profilEditLabel">Edit Role</h1> -->
+                <div class="stepsArea d-flex align-items-center justify-content-between">
+                    <div class="mdlprogess-bar">
+                        <div class="mdlprogress" [style]="{'width': progressStep*25+'%'}"></div>
+                    </div>
+                    <p class="mb-0 stepTxt">Step {{progressStep}}/4</p>
+                </div>
+                <button type="button" class="btn-close" #clientFormCloseButton data-bs-dismiss="modal" aria-label="Close" (click)="clearCreateModel()"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <!-- Busines Information -->
+                <div class="rolemodalbody" *ngIf="businessInfoToggle">
+                    <div class="enterprisetitle">
+                        <h3>Business Information</h3>
+                        <p>Please enter the business details.</p>
+                    </div>
+                    <form #businessInfoForm="ngForm" ngNativeValidate (ngSubmit)="goToContactForm()">
+                        <div class="rolemodalinner">
+                            <div class="row px-1">
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Type of Practice<sup>*</sup></label>
+                                        <angular2-multiselect required id="practiceType" name="practiceType" [data]="practiceListing" [settings]="dropdownSettingsPracticeType" [(ngModel)]="selectedPracticeType" #taxIdSelectBox="ngModel" (ngModelChange)="selectPracticeType($event)">
+                                        </angular2-multiselect>
+                                        <small *ngIf="businessInfoForm.submitted && 
+                                (selectedPracticeType == undefined || selectedPracticeType == null || selectedPracticeType.length == 0) && contactFormToggle" style="color: red;">Select Practice Type!
+                              </small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Legal Business Name (as registered with the IRS)<sup>*</sup></label>
+                                        <input type="text" required [(ngModel)]="clientBusinessInfoRequest.legalBusinessName" name="legalName" id="legalName" #legalName placeholder="Enter Legal Business Name" class="form-control">
+                                    </div>
+                                </div>
+                                <!-- DBA field -->
+                                <div class="col-lg-12 px-2">
+                                    <div class="">
+                                        <div class="align-items-center d-flex form-check gap-2 mb-0">
+                                            <input class="form-check-input mt-0" type="checkbox" value="" id="flexCheckChecked" [checked]="dbaFieldToggle" (click)="toggleDbaField()">
+                                            <label class="form-check-label pointer" for="" (click)="toggleDbaField()">
+                              DBA (Doing Business As) or Fictitious Business Name
+                            </label>
+                                        </div>
+                                        <div class="form-group mb-2 mdlform mt-2" *ngIf="dbaFieldToggle">
+                                            <input type="text" required [(ngModel)]="clientBusinessInfoRequest.dba" name="dba" id="dba" #dba class="form-control" placeholder="Enter DBA or Fictitious Business Name">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rolemodalinner border-top-0">
+                            <p class="titleform">Registered Business Address (as with the Secretary of State)</p>
+                            <div class="row px-1">
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Address Line 1<sup>*</sup></label>
+                                        <!-- <input type="text" required [(ngModel)]="clientBusinessInfoRequest.addressLine1" name="line1" id="line1" #line1 placeholder="Enter Address Line 1" class="form-control"> -->
+                                        <input class="form-control" placeholder="Address Line 1" [(ngModel)]="clientBusinessInfoRequest.addressLine1" ngx-google-places-autocomplete #placesRef="ngx-places" name="line1" id="line1" #line1 placeholder="Enter Address Line 1" autocomplete="none"
+                                            (onAddressChange)="handleBusinessAddressChange($event)" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Address Line 2</label>
+                                        <input type="text" [(ngModel)]="clientBusinessInfoRequest.addressLine2" name="line2" id="line2" #line2 placeholder="Enter Address Line 2" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <!-- <label>State<sup>*</sup></label> -->
+                                        <app-state-dropdown [_updatedStateName]="clientBusinessInfoRequest.stateName" [_updatedStateCode]="clientBusinessInfoRequest.stateCode" [_updatedCityName]="clientBusinessInfoRequest.city" [(cityNameProp)]="clientBusinessInfoRequest.city" [(stateCodeProp)]="clientBusinessInfoRequest.stateCode"
+                                            [(stateNameProp)]="clientBusinessInfoRequest.stateName" [stateNameLabelClass]="'fw-medium'" [stateNameDynamic]="'State'" [cityNameLabelClass]="'fw-medium'" [cityNameDynamic]="'City'" [stateNameClass]="'col-6'" [cityClass]="'col-6'"
+                                            [stateCodeClass]="'d-none'">
+                                        </app-state-dropdown>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-6 px-2">
+                      <div class="form-group mdlform mb-3">
+                        <label>City<sup>*</sup></label>
+                        <input type="text" required [(ngModel)]="clientBusinessInfoRequest.city" name="city" id="city" placeholder="City" class="form-control">
+                      </div>  
+                    </div> -->
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Country<sup>*</sup></label>
+                                        <input type="text" required [(ngModel)]="clientBusinessInfoRequest.country" name="country" id="country" #country placeholder="Country" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Zipcode<sup>*</sup></label>
+                                        <input type="text" required mask="000000" [(ngModel)]="clientBusinessInfoRequest.zipcode" name="zipcode" id="zipcode" placeholder="Zipcode" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="addressenterprise">
+                                        <div class="align-items-center d-flex form-check gap-2 mb-0">
+                                            <input class="form-check-input mt-0" type="checkbox" value="" [checked]="toggleMailingCheckBox" (click)="toggleMailingAddFields()" id="flexCheckChecked2">
+                                            <label class="form-check-label pointer" for="" (click)="toggleMailingAddFields()">
+                            Add Different Mailing Address
+                          </label>
+                                        </div>
+                                        <div class="row px-1 mt-3" *ngIf="toggleMailingCheckBox">
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Address Line 1<sup>*</sup></label>
+                                                    <!-- <input type="text" required [(ngModel)]="addressReq.addressLine1" name="mailingline1" id="mailingline1" #mailingline1 placeholder="Enter Address Line 1" class="form-control"> -->
+                                                    <input class="form-control" [(ngModel)]="addressReq.addressLine1" name="mailingline1" id="mailingline1" placeholder="Enter Address Line 1" ngx-google-places-autocomplete #mailingline1="ngx-places" placeholder="Enter Address Line 1" autocomplete="none"
+                                                        (onAddressChange)="handleDiffAddressChange($event)" />
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Address Line 2</label>
+                                                    <input type="text" [(ngModel)]="addressReq.addressLine2" name="mailingline2" id="mailingline2" #mailingline2 placeholder="Enter Address Line 2" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-12 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <!-- <label>State<sup>*</sup></label>  -->
+                                                    <app-state-dropdown [_updatedStateName]="addressReq.stateName" [_updatedStateCode]="addressReq.stateCode" [_updatedCityName]="addressReq.city" [(cityNameProp)]="addressReq.city" [(stateCodeProp)]="addressReq.stateCode" [(stateNameProp)]="addressReq.stateName"
+                                                        [stateNameLabelClass]="'fw-medium'" [stateNameDynamic]="'State'" [cityNameLabelClass]="'fw-medium'" [cityNameDynamic]="'City'" [stateNameClass]="'col-6'" [cityClass]="'col-6'" [stateCodeClass]="'d-none'">
+                                                    </app-state-dropdown>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Country<sup>*</sup></label>
+                                                    <input type="text" required [(ngModel)]="addressReq.country" name="mailingcountry" id="mailingcountry" #mailingcountry placeholder="Country" class="form-control">
+                                                </div>
+                                            </div>
+                                            <!-- <div class="col-lg-6 px-2">
+                            <div class="form-group mdlform mb-3">
+                              <label>City<sup>*</sup></label>
+                              <input type="text" required [(ngModel)]="addressReq.city" name="mailingcity" id="mailingcity" placeholder="City" class="form-control">
+                            </div>  
+                          </div> -->
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Zipcode<sup>*</sup></label>
+                                                    <input type="text" required mask="000000" [(ngModel)]="addressReq.zipcode" name="mailingzipcode" id="mailingzipcode" placeholder="Zipcode" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rolemodalinner border-0">
+                            <div class="row px-1">
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Business Phone<sup>*</sup></label>
+                                        <input type="text" required [(ngModel)]="clientBusinessInfoRequest.phone" name="phone" #phone id="phone" mask="(000)-000-0000" minLength="10" maxlength="14" placeholder="Enter Phone Number" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Business Fax<sup>*</sup></label>
+                                        <input type="text" required [(ngModel)]="clientBusinessInfoRequest.fax" name="fax" #fax id="fax" mask="(000)-000-0000" minLength="10" maxlength="14" placeholder="Enter Fax Number" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Business Email<sup>*</sup></label>
+                                        <input type="email" required [(ngModel)]="clientBusinessInfoRequest.email" name="email" #email id="email" placeholder="Enter Email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Entity Type<sup>*</sup></label>
+                                        <angular2-multiselect required id="entityType" name="entityType" [data]="entityListing" [settings]="dropdownSettingsEntityType" [(ngModel)]="selectedEntity" #taxIdSelectBox="ngModel" (ngModelChange)="selectEntityType($event)">
+                                        </angular2-multiselect>
+                                        <small *ngIf="businessInfoForm.submitted && 
+                          (selectedEntity == undefined || selectedEntity == null || selectedEntity.length == 0) 
+                          && contactFormToggle" style="color: red;">Select Entity Type!
+                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>EIN (Employer Identification Number)<sup>*</sup></label>
+                                        <input type="text" required [(ngModel)]="clientBusinessInfoRequest.ein" mask="00-0000000" name="ein" #ein id="ein" placeholder="XX-XXXXXXX" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 p-0">
+                            <button type="submit" class="btn primarynextebtn m-0">Next</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Busines Information -->
+
+                <!-- Primary Contact -->
+                <!-- <div class="rolemodalbody" *ngIf="contactInfoToggle"> -->
+                <div class="rolemodalbody" *ngIf="contactInfoToggle">
+                    <div class="enterprisetitle">
+                        <h3>Primary Contact</h3>
+                        <p>Please enter your primary contact details.</p>
+                    </div>
+                    <form #contactInfoForm="ngForm" ngNativeValidate (ngSubmit)="goToLocationForm()">
+                        <div class="">
+                            <div class="row px-1">
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>First Name<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="priContactReq.firstName" name="firstName" #firstName id="firstName" required placeholder="Enter First Name" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Last Name<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="priContactReq.lastName" name="lastName" #lastName id="lastName" required placeholder="Enter Last Name" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Phone Number<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="priContactReq.phone" mask="(000)-000-0000" minLength="10" maxlength="14" name="contphone" #contphone id="contphone" required placeholder="Enter Phone Number" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Alternate Phone Number</label>
+                                        <input type="text" [(ngModel)]="priContactReq.alternatePhone" mask="(000)-000-0000" minLength="10" maxlength="14" name="contalternatePhone" #contalternatePhone id="contalternatePhone" placeholder="Alternate Phone Number" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Email Address<sup>*</sup></label>
+                                        <input type="email" [(ngModel)]="priContactReq.email" name="contemail" #contemail id="contemail" required placeholder="Email Address" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Password<sup>*</sup></label>
+                                        <input type="password" [(ngModel)]="priContactReq.password" name="contpassword" #contpassword id="contpassword" required placeholder="Password" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="addressenterprise">
+                                        <div class="align-items-center d-flex form-check gap-2 mb-2">
+                                            <input class="form-check-input mt-0" type="checkbox" value="" [checked]="toggleSecContact" (click)="toggleSecContactFields()" id="flexCheckChecked3">
+                                            <label class="form-check-label pointer" for="" (click)="toggleSecContactFields()">
+                                                Add a Secondary Contact (Optional)
+                                            </label>
+                                        </div>
+                                        <div class="row px-1 mt-3" *ngIf="toggleSecContact">
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>First Name<sup>*</sup></label>
+                                                    <input type="text" [(ngModel)]="secContactReq.firstName" name="secfirstName" #secfirstName id="secfirstName" required placeholder="Enter First Name" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Last Name<sup>*</sup></label>
+                                                    <input type="text" [(ngModel)]="secContactReq.lastName" name="seclastName" #seclastName id="seclastName" required placeholder="Enter Last Name" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Phone Number<sup>*</sup></label>
+                                                    <input type="text" [(ngModel)]="secContactReq.phone" mask="(000)-000-0000" minLength="10" maxlength="14" name="seccontphone" #seccontphone id="seccontphone" required placeholder="Enter Phone Number" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Alternate Phone Number</label>
+                                                    <input type="text" [(ngModel)]="secContactReq.alternatePhone" mask="(000)-000-0000" minLength="10" maxlength="14" name="seccontalternatePhone" #seccontalternatePhone id="seccontalternatePhone" placeholder="Alternate Phone Number" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-12 px-2">
+                                                <div class="form-group mdlform mb-3">
+                                                    <label>Email Address<sup>*</sup></label>
+                                                    <input type="email" [(ngModel)]="secContactReq.email" name="seccontemail" #seccontemail id="seccontemail" required placeholder="Email Address" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 p-0 justify-content-between">
+                            <button type="button" (click)="goToBusinessForm()" class="btn primarybackebtn m-0">Back</button>
+                            <button type="submit" class="btn primarynextebtn m-0">Next</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Primary Contact -->
+
+                <!-- Primary Location -->
+                <div class="rolemodalbody" *ngIf="locationInfoToggle">
+                    <div class="enterprisetitle">
+                        <h3>Location - Primary</h3>
+                        <p>Please enter your location details.</p>
+                    </div>
+                    <form #locationInfoForm="ngForm" ngNativeValidate (ngSubmit)="goToModuleAccessForm()">
+                        <div class="rolemodalinner">
+                            <div class="row px-1">
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Legal Business Name (as registered with the IRS)<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="locationReq.legalBusinessName" name="locLegalName" #locLegalName id="locLegalName" required placeholder="Enter Legal Business Name" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="addressenterprise">
+                                        <div class="align-items-center d-flex form-check gap-2 mb-0">
+                                            <input class="form-check-input mt-0" type="checkbox" value="" [checked]="locationDbaToggle" (click)="locationDbaToggleField()" id="flexCheckChecked3">
+                                            <label class="form-check-label pointer" for="" (click)="locationDbaToggleField()">
+                                                DBA (Doing Business As) or Fictitious Business Name
+                                            </label>
+                                        </div>
+                                        <div class="form-group mb-2 mdlform mt-2" *ngIf="locationDbaToggle">
+                                            <input type="text" [(ngModel)]="locationReq.dba" name="locdba" #locdba id="locdba" placeholder="Enter DBA or Fictitious Business Name" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rolemodalinner border-top-0">
+                            <p class="titleform">Registered Business Address (as with the Secretary of State)</p>
+                            <div class="row px-1 mt-3">
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Address Line 1<sup>*</sup></label>
+                                        <!-- <input type="text" [(ngModel)]="locationReq.address1" name="locaddress1" #locaddress1 id="locaddress1" required placeholder="Enter Address Line 1" class="form-control"> -->
+                                        <input class="form-control" [(ngModel)]="locationReq.address1" name="locaddress1" #locaddress1="ngx-places" id="locaddress1" placeholder="Enter Address Line 1" ngx-google-places-autocomplete placeholder="Enter Address Line 1" autocomplete="none" (onAddressChange)="handleLocBusiAddressChange($event)"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Address Line 2</label>
+                                        <input type="text" [(ngModel)]="locationReq.address2" name="locaddress2" #locaddress2 id="locaddress2" placeholder="Enter Address Line 2" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <!-- <label>State<sup>*</sup></label> -->
+                                        <app-state-dropdown [_updatedStateName]="locationReq.stateName" [_updatedStateCode]="locationReq.stateCode" [_updatedCityName]="locationReq.city" [(cityNameProp)]="locationReq.city" [(stateCodeProp)]="locationReq.stateCode" [(stateNameProp)]="locationReq.stateName"
+                                            [stateNameLabelClass]="'fw-medium'" [stateNameDynamic]="'State'" [cityNameLabelClass]="'fw-medium'" [cityNameDynamic]="'City'" [stateNameClass]="'col-6'" [cityClass]="'col-6'" [stateCodeClass]="'d-none'" (callFunction)="selectState(locationReq.stateName, 0)">
+                                        </app-state-dropdown>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Country<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="locationReq.country" name="loccountry" #loccountry id="loccountry" required placeholder="Country" class="form-control">
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-6 px-2">
+                      <div class="form-group mdlform mb-3">
+                        <label>City<sup>*</sup></label>
+                        <input type="text" [(ngModel)]="locationReq.city" name="loccity" #loccity id="loccity" required  placeholder="City" class="form-control">
+                      </div>  
+                    </div> -->
+                                <div class="col-lg-6 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Zipcode<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="locationReq.zipcode" name="loczipcode" #loczipcode id="loczipcode" required placeholder="Zipcode" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rolemodalinner border-top-0">
+                            <div class="row px-1">
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Business Phone<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="locationReq.phone" name="locphone" #locphone id="locphone" required mask="(000)-000-0000" minLength="10" maxlength="14" placeholder="Enter Phone Number" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Business Fax<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="locationReq.fax" name="locfax" #locfax id="locfax" required placeholder="Enter Fax Number" mask="(000)-000-0000" minLength="10" maxlength="14" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Business Email<sup>*</sup></label>
+                                        <input type="email" [(ngModel)]="locationReq.email" name="locemail" #locemail id="locemail" required placeholder="Enter Email" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>EIN (Employer Identification Number)<sup>*</sup></label>
+                                        <input type="text" [(ngModel)]="locationReq.ein" mask="00-0000000" name="locein" #locein id="locein" required placeholder="Enter EIN Number" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rolemodalinner border-top-0 mb-3">
+                            <div class="row px-1">
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Enter NPI 2 (Organization NPI)</label>
+                                        <input type="text" [(ngModel)]="locationReq.npi" #locnpi maxlength="10" mask="0000000000" name="locname" id="locname" placeholder="Enter EIN Number" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Primary Taxonomy as per NPI 2<sup>*</sup></label>
+                                        <angular2-multiselect id="documentSelectBox" name="documentSelectBox" [settings]="dropdownSettingsMultiselectInfo" [data]="taxonomyList" [(ngModel)]="specialities" #documentSelectBox="ngModel" (ngModelChange)="selectTaxonomy($event)" (keyup)="onSearch($event)">
+                                        </angular2-multiselect>
+                                        <small *ngIf="locationInfoForm.submitted && 
+                                            (selectedEntity == undefined || selectedEntity == null || selectedEntity.length == 0) 
+                                            && locationFormToggle" style="color: red;">Select Primary Taxonomy!
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="custom-radiocheck mb-3">
+                                        <input class="form-check-input d-none" type="radio" name="flexRadioDefault" (click)="toggleSecTaxonomyField()" [checked]="haveSecTaxonomy" id="flexRadioDefault1">
+                                        <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="toggleSecTaxonomyField()">
+                                            <span><i class="fa-solid fa-check"></i></span>
+                                            Secondary Taxonomy as per NPI 2</label>
+                                    </div>
+                                    <div class="form-group mdlform mb-3" *ngIf="haveSecTaxonomy">
+                                        <label>Secondary Taxonomy as per NPI 2</label>
+                                        <angular2-multiselect id="documentSelectBoxSec" name="documentSelectBoxSec" [settings]="dropdownSettingsMultiselectInfo" [data]="taxonomyList" [(ngModel)]="secSpecialities" #documentSelectBoxSec="ngModel" (ngModelChange)="selectSecTaxonomy($event)" (keyup)="onSearch($event)">
+                                        </angular2-multiselect>
+                                    </div>
+
+                                </div>
+                                <div class="col-lg-12 px-2">
+                                    <div class="custom-radiocheck mb-3">
+                                        <input class="form-check-input d-none" type="radio" name="flexRadioDefault" (click)="toggleAddTaxonomyField()" [checked]="haveAddTaxonomy" id="flexRadioDefault2">
+                                        <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="toggleAddTaxonomyField()">
+                                            <span><i class="fa-solid fa-check"></i></span>
+                                            Additional 1 Taxonomy as per NPI 2
+                                        </label>
+                                    </div>
+                                    <div class="form-group mdlform mb-3" *ngIf="haveAddTaxonomy">
+                                        <label>Additional Taxonomy as per NPI 2</label>
+                                        <angular2-multiselect id="documentSelectBoxAdd" name="documentSelectBoxAdd" [settings]="dropdownSettingsMultiselectInfo" [data]="taxonomyList" [(ngModel)]="addSpecialities" #documentSelectBoxAdd="ngModel" (ngModelChange)="selectAddTaxonomy($event)" (keyup)="onSearch($event)">
+                                        </angular2-multiselect>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-top-0">
+                            <div class="row px-1">
+                                <div class="col-lg-12 px-2" *ngIf="clientBusinessInfoRequest.practiceType == 'Healthcare Facility'">
+                                    <div class="form-group mdlform mb-3">
+                                        <label>Facility Type<sup>*</sup></label>
+                                        <angular2-multiselect id="facilityType" name="facilityType" [data]="facilityList" [settings]="dropdownSettingsFacilityType" [(ngModel)]="selectedFacility" #taxIdSelectBox="ngModel" (ngModelChange)="selectFacilityType($event)">
+                                        </angular2-multiselect>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2 mb-2" *ngIf="clientBusinessInfoRequest.practiceType == 'Healthcare Facility'">
+                                    <div class="form-group">
+                                        <label>Is the Facility regulated by Clinical Laboratory Improvement Amendment (CLIA)?</label>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="custom-radiocheck mb-3">
+                                            <input class="form-check-input d-none" type="radio" name="CLIA" [checked]="isCliaFacility == 1" id="flexRadioDefault4" (click)="cliaToggleFields()">
+                                            <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="cliaToggleFields()">
+                                            <span><i class="fa-solid fa-check"></i></span>Yes</label>
+                                        </div>
+                                        <div class="custom-radiocheck mb-3">
+                                            <input class="form-check-input d-none" type="radio" name="CLIA" [checked]="isCliaFacility == 0" id="flexRadioDefault5" (click)="cliaToggleFields()">
+                                            <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="cliaToggleFields()">
+                                            <span><i class="fa-solid fa-check"></i></span>No</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row px-1" *ngIf="isCliaFacility == 1">
+                                        <div class="col-lg-6 px-2">
+                                            <div class="form-group mdlform mb-3">
+                                                <label>CLIA Number<sup>*</sup></label>
+                                                <input type="text" required [(ngModel)]="clientBusinessInfoRequest.cliaNumber" name="cliaNumber" #cliaNumber placeholder="Enter CLIA Number" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 px-2">
+                                            <div class="form-group mdlform mb-3">
+                                                <label>Upload CLIA Certificate<sup>*</sup></label>
+                                                <!-- <input type="file" placeholder="Enter CLIA Number" class="form-control d-none"> -->
+                                                <button type="button" [disabled]="uploadingCliaToggle" class="fileupldbtn" (click)="fileField.click()">
+                              <input type="file" class="form-control d-none" id="fileField" #fileField multiple ngModel name="fileField" required (change)="onSelectFile($event,'clia')">
+                              <span *ngIf="!uploadedCliaToggle">
+                                <i class="fa-solid fa-plus" *ngIf="!uploadingCliaToggle"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="uploadingCliaToggle"></i> Upload
+                              </span>
+                              <span *ngIf="uploadedCliaToggle">
+                                <i class="fa-solid fa-circle-check" style="color: #ebefea;"></i> Uploaded
+                              </span>
+                            </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2 mb-2" *ngIf="clientBusinessInfoRequest.practiceType == 'Healthcare Facility'">
+                                    <div class="form-group">
+                                        <label>Does the facility have a Clinical Laboratory Improvement Amendment (CLIA) 
+                          Certificate of Waiver ?</label>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="custom-radiocheck mb-3">
+                                            <input class="form-check-input d-none" type="radio" name="CLIA2" id="flexRadioDefault6" [checked]="isCliaWaiverFacility == 1" (click)="cliaWaiverToggleFields()">
+                                            <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="cliaWaiverToggleFields()">
+                            <span><i class="fa-solid fa-check"></i></span>Yes</label>
+                                        </div>
+                                        <div class="custom-radiocheck mb-3">
+                                            <input class="form-check-input d-none" type="radio" name="CLIA2" id="flexRadioDefault7" [checked]="isCliaWaiverFacility == 0" (click)="cliaWaiverToggleFields()">
+                                            <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="cliaWaiverToggleFields()">
+                            <span><i class="fa-solid fa-check"></i></span>No</label>
+                                        </div>
+                                    </div>
+                                    <div class="row px-1" *ngIf="isCliaWaiverFacility == 1">
+                                        <div class="col-lg-6 px-2">
+                                            <div class="form-group mdlform mb-3">
+                                                <label>CLIA Certificate of Waiver Number<sup>*</sup></label>
+                                                <input type="text" required [(ngModel)]="clientBusinessInfoRequest.cliaWaiverNumber" name="cliaWaiverNumber" #cliaWaiverNumber placeholder="Enter CLIA Certificate of Waiver Number" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 px-2">
+                                            <div class="form-group mdlform mb-3">
+                                                <label>Upload CLIA Certificate of Waiver<sup>*</sup></label>
+                                                <!-- <input type="file" placeholder="Enter CLIA Number" class="form-control d-none"> -->
+                                                <button type="button" [disabled]="uploadingCliaWaiverToggle" class="fileupldbtn" (click)="waverfileId.click()">
+                              <input type="file" class="form-control d-none" id="waverfileId" #waverfileId multiple ngModel name="waverfileId" required (change)="onSelectFile($event,'cliaWaiver')">
+                              <span *ngIf="!uploadedCliaWaiverToggle">
+                                <i class="fa-solid fa-plus" *ngIf="!uploadingCliaWaiverToggle"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="uploadingCliaWaiverToggle"></i> Upload
+                              </span>
+                              <span *ngIf="uploadedCliaWaiverToggle">
+                                <i class="fa-solid fa-circle-check" style="color: #ebefea;"></i> Uploaded
+                              </span>
+                            </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 px-2 mb-2" *ngIf="clientBusinessInfoRequest.practiceType == 'Healthcare Facility'">
+                                    <div class="form-group">
+                                        <label>Does the facility have a State License?</label>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="custom-radiocheck mb-3">
+                                            <input class="form-check-input d-none" type="radio" name="CLIA3" id="flexRadioDefault8" [checked]="isFacilityStateLicense == 1" (click)="facilityStateLicenseToggleFields()">
+                                            <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="facilityStateLicenseToggleFields()">
+                            <span><i class="fa-solid fa-check"></i></span>Yes</label>
+                                        </div>
+                                        <div class="custom-radiocheck mb-3">
+                                            <input class="form-check-input d-none" type="radio" name="CLIA3" id="flexRadioDefault9" [checked]="isFacilityStateLicense == 0" (click)="facilityStateLicenseToggleFields()">
+                                            <label class="form-check-label d-flex align-items-center gap-2" for="" (click)="facilityStateLicenseToggleFields()">
+                            <span><i class="fa-solid fa-check"></i></span>No</label>
+                                        </div>
+                                    </div>
+                                    <div class="row px-1" *ngIf="isFacilityStateLicense == 1">
+                                        <div class="col-lg-6 px-2">
+                                            <div class="form-group mdlform mb-3">
+                                                <label>Facility License Number<sup>*</sup></label>
+                                                <input type="text" required [(ngModel)]="clientBusinessInfoRequest.facilityLicenserNumber" name="facilityLicenserNumber" #facilityLicenserNumber placeholder="Enter Facility License Number" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 px-2">
+                                            <div class="form-group mdlform mb-3">
+                                                <label>State Licensed For<sup>*</sup></label>
+                                                <app-state-dropdown [_updatedStateName]="clientBusinessInfoRequest.facilityLicenserState" [(stateNameProp)]="clientBusinessInfoRequest.facilityLicenserState" [stateNameLabelClass]="'d-none'" [stateNameClass]="'col-12'" [cityClass]="'d-none'" [stateCodeClass]="'d-none'">
+                                                </app-state-dropdown>
+                                                <!-- <select class="form-control" required [(ngModel)]="clientBusinessInfoRequest.facilityLicenserState" name="facilityLicenserState" #facilityLicenserState>
+                              <option>Choose State</option>
+                              <option value="AL">Alabama</option>
+                              <option value="AK">Alaska</option>
+                              <option value="CA">California</option>
+                              <option value="CO">Colorado</option>
+                            </select> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0 p-0 justify-content-between">
+                            <button type="button" (click)="goToContactForm()" class="btn primarybackebtn m-0">Back</button>
+                            <button type="submit" class="btn primarynextebtn m-0">Next</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- Primary Location -->
+
+                <!-- client module -->
+                <div class="rolemodalbody" *ngIf="moduleToggle">
+                    <div class="enterprisetitle">
+                        <h3>Module Access Control</h3>
+                        <p>Please enable module access control.</p>
+                    </div>
+                    <form #moduleAccessForm="ngForm" ngNativeValidate (ngSubmit)="saveModuleDetails()">
+                        
+                        <div class="rolemodalinner border-top-0 border-bottom-0">
+                            
+                            <div class="accordrole">
+                                <app-circular-loader *ngIf="fetchingModule"></app-circular-loader>
+                                <div class="accordion" id="accordionExample" *ngIf="!fetchingModule">
+                                    <div class="accordion-item" *ngFor="let module of modules; let i=index; let j=index;">
+                                        <h2 class="accordion-header">
+                                            <div class="accordion-button">
+                                                <div class="accesstitle">
+                                                    <p class="mb-0">{{module.name}}</p>
+                                                </div>
+                                                <div class="accesspermission">
+                                                    <div class="accesspermissioninner d-flex">
+                                                        <div class="custom-radiocheck">
+                                                            <input type="radio" name="CLIA_ACCESS{{i}}" (click)="setModulePrivilege(i, Constant.VIEW_PRIVILEGE)" [checked]="module.isAccessible == 1" id="accessRadioDefault{{i}}" class="form-check-input d-none" />
+                                                            <label for="accessRadioDefault{{i}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                <span><i class="fa-solid fa-check"></i></span>Access
+                                                            </label>
+                                                        </div>
+                                                        <div class="custom-radiocheck" (click)="setModulePrivilege(i, Constant.VIEW_PRIVILEGE)">
+                                                            <input type="radio" name="CLIA{{i}}" [checked]="module.privilegeId == Constant.VIEW_PRIVILEGE" id="flexRadioDefault{{i}}" class="form-check-input d-none" />
+                                                            <label for="flexRadioDefault{{i}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                <span><i class="fa-solid fa-check"></i></span>View
+                                                            </label>
+                                                        </div>
+                                                        <div class="custom-radiocheck" (click)="setModulePrivilege(i, Constant.MANAGE_PRIVILEGE)">
+                                                            <input type="radio" name="CLIA{{i}}{{j}}" [checked]="module.privilegeId == Constant.MANAGE_PRIVILEGE" id="flexRadioDefault{{i}}{{j}}" class="form-check-input d-none" />
+                                                            <label for="flexRadioDefault{{i}}{{j}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                <span><i class="fa-solid fa-check"></i></span>Manage
+                                                            </label>
+                                                        </div>
+                                                        <div class="expand-accord">
+                                                            <i class="bi bi-chevron-down collapsed" data-bs-toggle="collapse" attr.data-bs-target="#collapse{{i}}" aria-expanded="true" attr.aria-controls="collapse{{i}}"></i>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </h2>
+                                        <div id="collapse{{i}}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+                                                <div *ngIf="module.subModules.length==0">
+                                                    <p>This module does not have sub module.</p>
+                                                </div>
+
+                                                <div class="body-access d-flex justify-content-between align-items-center" *ngFor="let subModule of module.subModules; let k=index; ; let l=index; ">
+                                                    <div class="accesstitle">
+                                                        <p class="mb-0">{{subModule.name}}</p>
+                                                    </div>
+                                                    <div class="accesspermission">
+                                                        <div class="accesspermissioninner d-flex">
+                                                            <div class="custom-radiocheck">
+                                                                <input type="radio" name="CLIA_ACCESSSub{{i}}{{k}}" (click)="setSubModulePrivilege(i, k, Constant.VIEW_PRIVILEGE,'access')" [checked]="subModule.isAccessible == 1" id="accessSubRadioDefault{{i}}{{k}}" class="form-check-input d-none" />
+                                                                <label for="accessSubRadioDefault{{i}}{{k}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                    <span><i class="fa-solid fa-check"></i></span>Access
+                                                                </label>
+                                                            </div>
+                                                            <div class="custom-radiocheck">
+                                                                <input type="radio" name="CLIA_Sub{{i}}{{k}}" (click)="setSubModulePrivilege(i, k, Constant.VIEW_PRIVILEGE,'view')" [checked]="subModule.privilegeId == Constant.VIEW_PRIVILEGE" id="flexSubRadioDefault{{i}}{{k}}" class="form-check-input d-none" />
+                                                                <label for="flexSubRadioDefault{{i}}{{k}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                    <span><i class="fa-solid fa-check"></i></span>View
+                                                                    
+                                                                </label>
+                                                            </div>
+                                                            <div class="custom-radiocheck">
+                                                                <input type="radio" name="CLIA_Sub{{i}}{{k}}{{l}}" (click)="setSubModulePrivilege(i, k, Constant.MANAGE_PRIVILEGE,'manage')" [checked]="subModule.privilegeId == Constant.MANAGE_PRIVILEGE" id="flexSubRadioDefault{{i}}{{k}}{{l}}" class="form-check-input d-none"
+                                                                />
+                                                                <label for="flexSubRadioDefault{{i}}{{k}}{{l}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                    <span><i class="fa-solid fa-check"></i></span>Manage
+                                                                    
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="rolemodalinner border-0">
+                                        <div class="form-group mdlform mb-3">
+                                            <label>Select User</label>
+                                            <angular2-multiselect name="userList" [settings]="dropdownSettingsOwner" [data]="ownerList" (keyup)="searchUser($event)" [(ngModel)]="selectedUser" #ownerSelectList="ngModel" (ngModelChange)="selectUser($event)">
+                                            </angular2-multiselect>
+                                            <!-- <label>Select User<sup>*</sup></label>
+                                            <select class="form-control">
+                                                <option>Credily_admin</option>
+                                            </select> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer border-top-0 p-0 justify-content-between">
+                            <button type="button" (click)="goToLocationForm()" class="btn primarybackebtn m-0">Back</button>
+                            <button type="submit" [disabled]="createClientToggle" class="btn primarynextebtn m-0">
+                                <span>Create Client
+                                <i class="fa-solid fa-arrow-right-long" *ngIf="!createClientToggle"></i>
+                                <i class="fa fa-spinner fa-spin" *ngIf="createClientToggle"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <!-- client module end-->
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="d-none" #deleteModelButton data-bs-toggle="modal" data-bs-target="#deleteModel"></button>
+<div class="modal blur-bg-2" id="deleteModel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="profilCreatemodal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <img src="assets/images/bin.png" width="20%" class="img-sm">
+                <h4 class="modal-title w-100">Are you sure want to delete it?</h4>
+                <p></p>
+                <small class="pt-2 mt-2">Client will be deleted permanently. 
+                  Are you sure you want to delete this record?</small>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" data-bs-dismiss="modal" [disabled]="deleteClientToggle" class="btn btnmarkdelete" (click)="deleteClient()">
+                Yes Delete It
+              </button>
+                <button type="button" class="btn btnmarkcancel" #closeDeleteModel data-bs-dismiss="modal"> Cancel </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Create and update role-->
+
+<button type="button" class="d-none" #openRoleModelButton data-bs-toggle="modal" data-bs-target="#permissionModal"></button>
+
+<div class="modal blur-bg-2" id="permissionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="permissionModal" aria-hidden="true">
+    <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header border-bottom-1">
+                <h1 class="modal-title" id="profilEditLabel">{{selectedClientName}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="clearCreateModel()"></button>
+            </div>
+            <form #roleDetailForm="ngForm" (ngSubmit)="saveModuleDetails()" ngNativeValidate>
+                <div class="modal-body pt-0">
+                    <div class="rolemodalbody">
+                        
+                        <div class="form-group mdlform mb-3">
+                            <label>Client Name</label>
+                            <input type="text" placeholder="Enter Client Name" name="clientName" [(ngModel)]="editClientName" class="form-control" minlength="3" maxlength="150" required>
+                        </div>
+
+                        <div class="rolemodalinner border-top-0">
+                            <h3>Module Access Control</h3>
+
+                            <div class="accordrole">
+                                <app-circular-loader *ngIf="fetchingModule"></app-circular-loader>
+                                <div class="accordion" id="accordionExample" *ngIf="!fetchingModule">
+                                    <div class="accordion-item" *ngFor="let module of modules; let i=index; let j=index;">
+                                        <h2 class="accordion-header">
+                                            <div class="accordion-button">
+                                                <div class="accesstitle">
+                                                    <p class="mb-0">{{module.name}}</p>
+                                                </div>
+                                                <div class="accesspermission">
+                                                    <div class="accesspermissioninner d-flex">
+                                                        <div class="custom-radiocheck">
+                                                            <input type="radio" name="CLIA_ACCESS{{i}}" (click)="setModulePrivilege(i, Constant.VIEW_PRIVILEGE)" [checked]="module.isAccessible == 1" id="accessRadioDefault{{i}}" class="form-check-input d-none" />
+                                                            <label for="accessRadioDefault{{i}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                <span><i class="fa-solid fa-check"></i></span>Access
+                                                            </label>
+                                                        </div>
+                                                        <div class="custom-radiocheck" (click)="setModulePrivilege(i, Constant.VIEW_PRIVILEGE)">
+                                                            <input type="radio" name="CLIA{{i}}" [checked]="module.privilegeId == Constant.VIEW_PRIVILEGE" id="flexRadioDefault{{i}}" class="form-check-input d-none" />
+                                                            <label for="flexRadioDefault{{i}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                <span><i class="fa-solid fa-check"></i></span>View
+                                                            </label>
+                                                        </div>
+                                                        <div class="custom-radiocheck" (click)="setModulePrivilege(i, Constant.MANAGE_PRIVILEGE)">
+                                                            <input type="radio" name="CLIA{{i}}{{j}}" [checked]="module.privilegeId == Constant.MANAGE_PRIVILEGE" id="flexRadioDefault{{i}}{{j}}" class="form-check-input d-none" />
+                                                            <label for="flexRadioDefault{{i}}{{j}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                <span><i class="fa-solid fa-check"></i></span>Manage
+                                                            </label>
+                                                        </div>
+                                                        <div class="expand-accord">
+                                                            <i class="bi bi-chevron-down collapsed" data-bs-toggle="collapse" attr.data-bs-target="#collapse{{i}}" aria-expanded="true" attr.aria-controls="collapse{{i}}"></i>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </h2>
+                                        <div id="collapse{{i}}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body">
+                                                <div *ngIf="module.subModules.length==0">
+                                                    <p>This module does not have sub module.</p>
+                                                </div>
+
+                                                <div class="body-access d-flex justify-content-between align-items-center" *ngFor="let subModule of module.subModules; let k=index; ; let l=index; ">
+                                                    <div class="accesstitle">
+                                                        <p class="mb-0">{{subModule.name}}</p>
+                                                    </div>
+                                                    <div class="accesspermission">
+                                                        <div class="accesspermissioninner d-flex">
+                                                            <div class="custom-radiocheck">
+                                                                <input type="radio" name="CLIA_ACCESSSub{{i}}{{k}}" (click)="setSubModulePrivilege(i, k, Constant.VIEW_PRIVILEGE,'access')" [checked]="subModule.isAccessible == 1" id="accessSubRadioDefault{{i}}{{k}}" class="form-check-input d-none" />
+                                                                <label for="accessSubRadioDefault{{i}}{{k}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                    <span><i class="fa-solid fa-check"></i></span>Access
+                                                                </label>
+                                                            </div>
+                                                            <div class="custom-radiocheck">
+                                                                <input type="radio" name="CLIA_Sub{{i}}{{k}}" (click)="setSubModulePrivilege(i, k, Constant.VIEW_PRIVILEGE,'view')" [checked]="subModule.privilegeId == Constant.VIEW_PRIVILEGE" id="flexSubRadioDefault{{i}}{{k}}" class="form-check-input d-none" />
+                                                                <label for="flexSubRadioDefault{{i}}{{k}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                    <span><i class="fa-solid fa-check"></i></span>View
+                                                                    
+                                                                </label>
+                                                            </div>
+                                                            <div class="custom-radiocheck">
+                                                                <input type="radio" name="CLIA_Sub{{i}}{{k}}{{l}}" (click)="setSubModulePrivilege(i, k, Constant.MANAGE_PRIVILEGE,'manage')" [checked]="subModule.privilegeId == Constant.MANAGE_PRIVILEGE" id="flexSubRadioDefault{{i}}{{k}}{{l}}" class="form-check-input d-none"
+                                                                />
+                                                                <label for="flexSubRadioDefault{{i}}{{k}}{{l}}" class="form-check-label d-flex align-items-center gap-2">
+                                                                    <span><i class="fa-solid fa-check"></i></span>Manage
+                                                                    
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="rolemodalinner border-0">
+                                        <label>Select User</label>
+                                        <angular2-multiselect name="user" [settings]="dropdownSettingsOwner" [data]="ownerList" (keyup)="searchUser($event)" [(ngModel)]="selectedUser" #ownerSelectList="ngModel" (ngModelChange)="updateSelectUser($event)">
+                                        </angular2-multiselect>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn primarycancelbtn" data-bs-dismiss="modal" #closeRoleCreateModel (click)="clearCreateModel()">Cancel</button>
+                    <button type="submit" class="btn primarybtn" [disabled]="createClientToggle">
+                        Update <i class="fa fa-spinner fa-spin" *ngIf="createClientToggle"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<button type="button" style="display: none;" #clientDetailmodalButton id="clientDetailmodalButton" data-bs-toggle="modal" data-bs-target="#clientDetailmodal"></button>
+<div class="modal blur-bg-2" id="clientDetailmodal" tabindex="-1" aria-labelledby="clientDetailmodal" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="min-height: 500px;" *ngIf="loadingToggle">
+            <app-circular-loader></app-circular-loader>
+        </div>
+        <div class="modal-content" *ngIf="!loadingToggle">
+            <div class="modal-header border-0">
+                <h1 class="modal-title" id="profilEditLabel">{{client.legalBusinessName}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <div class="rolemodalbody">
+                    <div class="rolemodalinner">
+                        <h3>{{client.legalBusinessName}} ’s Information</h3>
+
+                        <div class="userdetails">
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">E-Mail : </p>
+                                <p class="text-start">
+                                    <span *ngIf="client.email != null">{{client.email}}</span>
+                                    <span *ngIf="client.email == null">N/A</span>
+                                </p>
+                            </div>
+    
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Owner : </p>
+                                <p class="text-start">
+                                    <span *ngIf="client.clientOwner != null">{{client.clientOwner | titlecase}}</span>
+                                    <span *ngIf="client.clientOwner == null">N/A</span>
+                                </p>
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Phone : </p>
+                                <p class="text-start">
+                                    <span *ngIf="client.phone != null">{{client.phone | mask:'(000)-000-0000'}}</span>
+                                    <span *ngIf="client.phone == null">N/A</span>
+                                </p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Fax Number : </p>
+                                <p class="text-start">
+                                    <span *ngIf="client.fax != null">{{client.fax | mask:'(000)-000-0000'}}</span>
+                                    <span *ngIf="client.fax == null">N/A</span>
+                                </p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Entity Type : </p>
+                                <p class="text-start">
+                                    <span *ngIf="client.entityType != null">{{client.entityType | titlecase}}</span>
+                                    <span *ngIf="client.entityType == null">N/A</span>
+                                </p>
+                            </div>
+
+                            <div class="d-flex align-items-center">
+                                <p class="text-end">Location : </p>
+                                <p class="text-start">
+                                    <span *ngIf="client.clientBusinessLocation != null">{{client.clientBusinessLocation}}</span>
+                                    <span *ngIf="client.clientBusinessLocation == null">N/A</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

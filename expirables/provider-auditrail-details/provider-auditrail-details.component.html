@@ -1,0 +1,154 @@
+<div class="container-fluid">
+    <div class="main">
+        <div class="roletitlemain d-flex justify-content-between align-items-center">
+            <div class="breadcrumb-bx">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item pointer">
+                            <a [routerLink]="Route.EXPIRABLE_ALL_PROVIDER" class="text-decoration-none">Expirables</a>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="breadcrumb-item pointer">
+                            <a [routerLink]="Route.EXPIRABLE_ALL_PROVIDER" class="text-decoration-none">All Expirables by Provider</a>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="breadcrumb-item pointer">
+                            <a (click)="gotoPreviousPage()" class="text-decoration-none">Provider Expirables</a>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="breadcrumb-item active">Audit Trail</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="audiTrailmain mt-3">
+            <div class="row px-1">
+                <div class="col-lg-6 px-2">
+                    <div class="backButton">
+                        <button class="btn loginbackbtn" type="button" (click)="gotoPreviousPage()">
+                            <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3.66667 1.33398L1 4.00065M1 4.00065L3.66667 6.66732M1 4.00065H13" stroke="#3D3D3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>                                
+                            Go Back
+                        </button>
+                    </div>
+                    <div class="sortButton d-flex justify-content-between align-items-center" *ngIf="enableSearch">
+                        <div class="auditSearch">
+                            <div  class="form-group usrtblesearch position-relative">
+                                <input  type="text" placeholder="Search Auditrail" id="expirable" name="expirableList" class="form-control" [(ngModel)]="AuditDatabaseHelper.search" (ngModelChange)="this.auditTrailSearch.next($event)" />
+                                <i  class="fa-solid fa-magnifying-glass"></i>
+                                <!-- <i class="fa-solid fa-xmark pointer" style=" padding-left: 16rem;" *ngIf="AuditDatabaseHelper.search.length>0" (click)="AuditDatabaseHelper.search=''; getAuditTrail()"></i> -->
+                            </div>
+                        </div>
+                        <button type="button" class="btn primarybtn px-3 gap-2">
+                            <i class="bi bi-arrow-down-up"></i> Sort
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <app-circular-loader *ngIf="loadingAuditTrail"></app-circular-loader>
+
+            <div class="row px-1 mt-4">
+                <div class="empty-notific" *ngIf=" !loadingAuditTrail && AuditList.length == 0">
+                    <div class="empty-notificinner">
+                      <img src="assets/images/nodocument.svg" alt="">
+                      <h4>No Audit Trail Found.</h4>
+                    </div>
+                  </div>
+                <div class="col-lg-6 px-2" *ngIf=" !loadingAuditTrail && AuditList.length > 0">
+                    <div class="auditStatusmain">
+                        <div class="auditStatusCard" *ngFor="let  p of AuditList ">
+                            <div class="auditStatusCardinner d-flex">
+                                <div class="auditStsicon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <div class="auditStatusinfo" >
+                                    <span [ngClass]="{'statusactive':p.actionType=='Created', 'statusuploaded':p.actionType=='Uploaded', 'statusinactive':p.actionType=='Updated', 'statusdeleted':p.actionType=='Deleted'}">{{p.actionType}}</span>
+                                    <h3>{{p.username}}</h3>
+                                    <!-- <p>{{p.actionFrom}}</p> -->
+                                    <p>{{p.description}}</p>
+                                    <p class="mb-0">
+                                        <span>{{p.createdDate | date : "MM-dd-yyyy hh:mm a" : "EST"}}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="auditStatusCard">
+                            <div class="auditStatusCardinner d-flex">
+                                <div class="auditStsicon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <div class="auditStatusinfo">
+                                    <span class="statusuploaded">Uploaded</span>
+                                    <h3>John Doe</h3>
+                                    <p>John Doe updated the document NY State License.</p>
+                                    <p class="mb-0">
+                                        <span>04/03/2023</span>
+                                        <i class="bi bi-dot"></i>
+                                        <span>05:55 AM (EST)</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="auditStatusCard">
+                            <div class="auditStatusCardinner d-flex">
+                                <div class="auditStsicon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <div class="auditStatusinfo">
+                                    <span class="statusactive">Updated</span>
+                                    <h3>John Doe</h3>
+                                    <p>John Doe updated the document NY State License.</p>
+                                    <p class="mb-0">
+                                        <span>04/03/2023</span>
+                                        <i class="bi bi-dot"></i>
+                                        <span>05:55 AM (EST)</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- <div class="auditStatusCard">
+                            <div class="auditStatusCardinner d-flex">
+                                <div class="auditStsicon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <div class="auditStatusinfo">
+                                    <span class="statusactive">Updated</span>
+                                    <h3>John Doe</h3>
+                                    <p>John Doe updated the document NY State License.</p>
+                                    <p class="mb-0">
+                                        <span>04/03/2023</span>
+                                        <i class="bi bi-dot"></i>
+                                        <span>05:55 AM (EST)</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div> -->
+                    
+                    </div>
+                </div>
+            </div>
+            <div class="paginationmain" *ngIf="!loadingAuditTrail && totalAuditTrail > 0">
+                <div class="d-flex align-items-center justify-content-between">
+                  <p class="currentshowing mb-0">
+                    Showing <span>{{AuditList.length}}</span> of <span>{{totalAuditTrail}}</span>
+                  </p>
+                  <div class="col-lg-6">
+                    <div class="card-body d-flex justify-content-end">
+                      <ngb-pagination class="pagination pagination-separated justify-content-sm-end mb-sm-0"
+                        [collectionSize]="totalAuditTrail" [rotate]="true" (pageChange)="pageChanged($event)"
+                        [pageSize]="AuditDatabaseHelper.itemsPerPage" [(page)]="AuditDatabaseHelper.currentPage" [maxSize]="5"
+                        [boundaryLinks]="true">
+                      </ngb-pagination>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+        </div>
+       
+    </div>
+</div>

@@ -1,0 +1,66 @@
+<section class="loginsec">
+    <div class="row">
+        <div class="col-lg-5 p-0">
+            <div class="login-bg">
+                <img src="assets/images/logindotstop.svg" class="topdots">
+                <img src="assets/images/vector-forgot-password.svg" class="bgimage">
+                <img src="assets/images/logindotsbottom.svg" class="bottomdots">
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="loginformbx">
+                <div class="loginforminner">
+                    <div class="loginlogo">
+                        <img src="assets/images/logo.svg" alt="">
+                    </div>
+
+                    <div class="form-fields" *ngIf="!otpToggle">
+                        <div class="form-fieldstitle">
+                            <h3>Forgot Password?</h3>
+                            <p class="mb-0">Enter your email and instructions will be sent to you!</p>
+                        </div>
+                        <form #requestOtpForm="ngForm" ngNativeValidate (ngSubmit)="requestOtp()">
+                            <div class="mdlform form-group usrtblesearch position-relative mb-3">
+                                <label>Email Id<sup>*</sup></label>
+                                <div class="position-relative">
+                                    <input type="text" placeholder="email@example.com" [(ngModel)]="userName" name="inputEmail" class="form-control" 
+                                    pattern="^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$" ngModel required #emailUser="ngModel" />
+                                    <i>
+                                        <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0.5 3.52832L7.075 7.91165C7.34888 8.09439 7.67075 8.1919 8 8.1919C8.32925 8.1919 8.65112 8.09439 8.925 7.91165L15.5 3.52832M2.16667 12.695H13.8333C14.2754 12.695 14.6993 12.5194 15.0118 12.2068C15.3244 11.8943 15.5 11.4703 15.5 11.0283V2.69499C15.5 2.25296 15.3244 1.82904 15.0118 1.51648C14.6993 1.20391 14.2754 1.02832 13.8333 1.02832H2.16667C1.72464 1.02832 1.30072 1.20391 0.988155 1.51648C0.675595 1.82904 0.5 2.25296 0.5 2.69499V11.0283C0.5 11.4703 0.675595 11.8943 0.988155 12.2068C1.30072 12.5194 1.72464 12.695 2.16667 12.695Z" stroke="#6B7280" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>                                        
+                                    </i>
+                                </div>
+                            </div>
+
+                            <div class="login-formsubmit mt-2">
+                                <button type="submit" [disabled]="requestOtpToggle" class="btn primarybtn justify-content-center w-100 py-2" >
+                                    <span>Send Reset OTP
+                                        <i class="fa fa-spinner fa-spin" *ngIf="requestOtpToggle"></i>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="form-fields" *ngIf="otpToggle">
+                        <div class="form-fieldstitle">
+                            <h3>Verify Your Email</h3>
+                            <p class="mb-0">Please enter the 6 digit code sent to <span class="fw-semibold">{{userName}}</span></p>
+                        </div>
+                        <form #otpForm="ngForm" ngNativeValidate (ngSubmit)="verifyOtp()">
+
+                            <input class="form-control" id="partitioned" type="text" name="otpField" #partitioned [(ngModel)]="otp" maxlength="6" (keyup)="checkOTP()" />
+
+                            <div class="mt-3">
+                                <button type="submit" class="btn primarybtn justify-content-center w-100 py-2">Confirm</button>
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,560 @@
+<div class="container-fluid">
+    <div class="main">
+      <div class="roletitlemain">
+        <div class="breadcrumb-bx">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+              <!-- <li class="breadcrumb-item"><a href="#">Home</a> <i class="fa-solid fa-chevron-right"></i></li> -->
+              <li class="breadcrumb-item active pointer">
+                Clients <i class="fa-solid fa-chevron-right"></i>
+              </li>
+            </ol>
+          </nav>
+        </div>
+        <div class="pagetitle">
+          <h3>Users</h3>
+          <p>
+            Lorem Ipsum diam maecenas sed enim ut sem viverra aliquet eget sit
+            amet tellus cras adipiscing enim eu turpis egestas pretium aenean
+            pharetra magna ac placerat vestibulum lectus mauris ultrices eros in
+            cursus turpis massa tincidunt dui ut ornare lectus sit amet est
+            placerat in egestas erat imperdiet sed euismod nisi porta.
+          </p>
+        </div>
+      </div>
+  
+      <div class="usertablemain">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-lg-3 px-2">
+            <div class="form-group usrtblesearch position-relative">
+              <input type="text" placeholder="Search User" class="form-control"/>
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <!-- <i class="fa-solid fa-xmark pointer" style=" padding-left: 16rem;"></i> -->
+            </div>
+          </div>
+          <div class="col-lg-2 pl-2 pr-0">
+            <div class="text-end">
+              <button type="button" class="btn primarybtn" (click)="openCreateLeaderModel()" data-bs-toggle="modal" data-bs-target="#createUsermodal">
+                Create New User
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="usertable mt-3">
+          <div class="usertableinner table-responsive">
+
+            <app-circular-loader *ngIf="fetchingLeader"></app-circular-loader>
+
+            <table class="table" *ngIf="!fetchingLeader">
+              <thead>
+                <tr>
+                  <th style="width: 5%">Id <i class="fa-solid fa-arrow-down-long"></i></th>
+                  <th style="width: 20%">User Name</th>
+                  <th style="width: 20%">Date</th>
+                  <th style="width: 20%">Status</th>
+                  <th style="width: 20%">Roles</th>
+                  <th style="width: 20%">Action</th>
+                </tr>
+              </thead>
+  
+              <tbody>
+                <tr *ngFor="let leader of eLeaders; let i=index">
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">{{i+1}}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0 pointer" data-bs-toggle="modal" data-bs-target="#userDetailmodal">
+                        <span *ngIf="!Constant.EMPTY_STRINGS.includes(leader.firstName)">{{leader.firstName}} </span> <span *ngIf="!Constant.EMPTY_STRINGS.includes(leader.lastName)">{{leader.lastName}}</span>
+                      </p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                        <span class="badge-grey">{{leader.createdDate | date:'MM/dd/yyyy hh:mm a' : 'EST'}} (EST)</span>
+                    </div>
+                  </td>
+                  
+                  <td>
+                    <div class="tableinfo">
+                      <span class="statusactive">Active</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">{{leader.role}}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <div class="customswitch">
+                        <input type="checkbox" id="customSwitch" class="d-none">
+                        <label for="customSwitch" class="pointer position-relative">
+                            <span></span>
+                        </label>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- <tr>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">#1</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0 pointer" data-bs-toggle="modal" data-bs-target="#userDetailmodal">John Doe</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                        <span class="badge-grey">02/12/2021</span>
+                    </div>
+                  </td>
+                  
+                  <td>
+                    <div class="tableinfo">
+                      <span class="statusactive">Active</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">Role Admin</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <div class="customswitch">
+                        <input type="checkbox" id="customSwitch" class="d-none">
+                        <label for="customSwitch" class="pointer position-relative">
+                            <span></span>
+                        </label>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">#1</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0 pointer" data-bs-toggle="modal" data-bs-target="#userDetailmodal">John Doe</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                        <span class="badge-grey">02/12/2021</span>
+                    </div>
+                  </td>
+                  
+                  <td>
+                    <div class="tableinfo">
+                      <span class="statusactive">Active</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">Role Admin</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <div class="customswitch">
+                        <input type="checkbox" id="customSwitch" class="d-none">
+                        <label for="customSwitch" class="pointer position-relative">
+                            <span></span>
+                        </label>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">#1</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0 pointer" data-bs-toggle="modal" data-bs-target="#userDetailmodal">John Doe</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                        <span class="badge-grey">02/12/2021</span>
+                    </div>
+                  </td>
+                  
+                  <td>
+                    <div class="tableinfo">
+                      <span class="statusactive">Active</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">Role Admin</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <div class="customswitch">
+                        <input type="checkbox" id="customSwitch" class="d-none">
+                        <label for="customSwitch" class="pointer position-relative">
+                            <span></span>
+                        </label>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">#1</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0 pointer" data-bs-toggle="modal" data-bs-target="#userDetailmodal">John Doe</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                        <span class="badge-grey">02/12/2021</span>
+                    </div>
+                  </td>
+                  
+                  <td>
+                    <div class="tableinfo">
+                      <span class="statusactive">Active</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">Role Admin</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <div class="customswitch">
+                        <input type="checkbox" id="customSwitch" class="d-none">
+                        <label for="customSwitch" class="pointer position-relative">
+                            <span></span>
+                        </label>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">#1</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0 pointer" data-bs-toggle="modal" data-bs-target="#userDetailmodal">John Doe</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                        <span class="badge-grey">02/12/2021</span>
+                    </div>
+                  </td>
+                  
+                  <td>
+                    <div class="tableinfo">
+                      <span class="statusactive">Active</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <p class="mb-0">Role Admin</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tableinfo">
+                      <div class="customswitch">
+                        <input type="checkbox" id="customSwitch" class="d-none">
+                        <label for="customSwitch" class="pointer position-relative">
+                            <span></span>
+                        </label>
+                      </div>
+                    </div>
+                  </td>
+                </tr> -->
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  <!-- Modals -->
+  <!-- Button trigger modal -->
+  <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profilEditmodal">
+      Launch demo modal
+    </button>
+     -->
+    <!-- Modal Edit-->
+    
+    <div class="modal blur-bg-2" id="userDetailmodal" tabindex="-1" aria-labelledby="userDetailmodal" aria-hidden="true">
+  
+      <div class="modal-dialog modal-dialog-centered    ">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h1 class="modal-title" id="profilEditLabel">John Doe</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body pt-0">
+            <div class="rolemodalbody">
+              <div class="rolemodalinner">
+                  <h3>John’s Information</h3>
+                  <div class="userdetails">
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Mobile : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Company Phone : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Extension Number : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">E-Mail : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Status : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Role : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Title : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">About Info : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Timezone : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <p class="text-end">Lang Code : </p>
+                        <p class="text-start"> Placeholder</p>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0 pt-0">
+            <button type="button" class="btn primarycancelbtn" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn primarybtn">Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+    <!-- new user create -->
+    <div class="modal blur-bg-2" id="createUsermodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createUsermodal" aria-hidden="true">
+  
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <form #leaderDetailForm="ngForm" ngNativeValidate>
+              <div class="modal-header border-0">
+                <h1 class="modal-title" id="profilEditLabel">Create User</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeCreateModel()"></button>
+              </div>
+              <div class="modal-body pt-0">
+                <div class="rolemodalbody">
+                  <div class="rolemodalinner">
+                      <div class="row px-1">
+                          <div class="col-lg-6 col-md-12 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>First Name<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <input type="text" placeholder="Eg: John" class="form-control" name="fname" [(ngModel)]="eLeaderReq.firstName" required  minlength="3" maxlength="55"/>
+                                      <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>Last Name
+                                    <sup>*</sup>
+                                  </label>
+                                  <div class="position-relative">
+                                      <input type="text" placeholder="Eg: Doe" class="form-control" name="lname" [(ngModel)]="eLeaderReq.lastName" required  minlength="3" maxlength="55"/>
+                                      <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>Title<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <input type="text" placeholder="Eg: Administrator" class="form-control" name="title" [(ngModel)]="eLeaderReq.title" required  minlength="3" maxlength="55"/>
+                                      <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12 px-2">
+                              <div class="mdlform form-group usrtblesearch position-relative mb-3">
+                                  <label>Extension Number<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <input type="text" placeholder="Enter Extension Number" class="form-control" name="extensionNumber" [(ngModel)]="eLeaderReq.extensionNumber" required  minlength="10" maxlength="10"/>
+                                      <!-- <i class="fa-solid fa-magnifying-glass"></i> -->
+                                      <i><svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M1.48816 0.988155C1.17559 1.30072 1 1.72464 1 2.16667V3C1 9.90333 6.59667 15.5 13.5 15.5H14.3333C14.7754 15.5 15.1993 15.3244 15.5118 15.0118C15.8244 14.6993 16 14.2754 16 13.8333V11.1008C16 10.9259 15.945 10.7553 15.8427 10.6134C15.7404 10.4714 15.596 10.3653 15.43 10.31L11.6858 9.06167C11.4956 8.99841 11.2888 9.0059 11.1036 9.08274C10.9184 9.15958 10.7671 9.30062 10.6775 9.48L9.73583 11.3608C7.69538 10.4389 6.0611 8.80462 5.13917 6.76417L7.02 5.8225C7.19938 5.73288 7.34042 5.58158 7.41726 5.39637C7.4941 5.21116 7.50158 5.00445 7.43833 4.81417L6.19 1.07C6.13475 0.90413 6.02874 0.759836 5.88696 0.657542C5.74519 0.555247 5.57483 0.500133 5.4 0.5H2.66667C2.22464 0.5 1.80072 0.675595 1.48816 0.988155Z" stroke="#6B7280" stroke-linecap="round" stroke-linejoin="round"/>
+                                          </svg>
+                                          </i>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12 px-2">
+                              <div class="mdlform form-group usrtblesearch position-relative mb-3">
+                                  <label>Email Id<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <input type="email" placeholder="Enter Extension Number" class="form-control" name="email" [(ngModel)]="eLeaderReq.email" required  minlength="3" maxlength="55"/>
+                                      <i>
+                                          <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M0.5 3.66602L7.075 8.04935C7.34888 8.23208 7.67075 8.3296 8 8.3296C8.32925 8.3296 8.65112 8.23208 8.925 8.04935L15.5 3.66602M2.16667 12.8327H13.8333C14.2754 12.8327 14.6993 12.6571 15.0118 12.3445C15.3244 12.032 15.5 11.608 15.5 11.166V2.83268C15.5 2.39065 15.3244 1.96673 15.0118 1.65417C14.6993 1.34161 14.2754 1.16602 13.8333 1.16602H2.16667C1.72464 1.16602 1.30072 1.34161 0.988155 1.65417C0.675595 1.96673 0.5 2.39065 0.5 2.83268V11.166C0.5 11.608 0.675595 12.032 0.988155 12.3445C1.30072 12.6571 1.72464 12.8327 2.16667 12.8327Z" stroke="#6B7280" stroke-linecap="round" stroke-linejoin="round"/>
+                                              </svg>
+                                              
+                                      </i>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12 px-2">
+                              <div class="mdlform form-group usrtblesearch position-relative mb-3">
+                                  <label>Password<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <input type="password" placeholder="Enter Extension Number" class="form-control" name="password" [(ngModel)]="eLeaderReq.password" required  minlength="5" maxlength="15"/>
+                                      <i>
+                                          <svg width="14" height="18" viewBox="0 0 14 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path fill-rule="evenodd" clip-rule="evenodd" d="M6.99967 0.666016C9.2403 0.666016 11.0679 2.4346 11.1625 4.65194L11.1663 4.83268V7.33268C12.5471 7.33268 13.6663 8.45197 13.6663 9.83268V14.8327C13.6663 16.2134 12.5471 17.3327 11.1663 17.3327H2.83301C1.4523 17.3327 0.333008 16.2134 0.333008 14.8327V9.83268C0.333008 8.45197 1.4523 7.33268 2.83301 7.33268V4.83268C2.83301 2.5315 4.69849 0.666016 6.99967 0.666016ZM11.1663 8.99935H2.83301C2.37277 8.99935 1.99967 9.37245 1.99967 9.83268V14.8327C1.99967 15.2929 2.37277 15.666 2.83301 15.666H11.1663C11.6266 15.666 11.9997 15.2929 11.9997 14.8327V9.83268C11.9997 9.37245 11.6266 8.99935 11.1663 8.99935ZM7.14657 2.33693L6.99967 2.33268C5.66827 2.33268 4.57996 3.37345 4.50392 4.68579L4.49967 4.83268V7.33268H9.49967V4.83268C9.49967 3.50128 8.45891 2.41296 7.14657 2.33693L6.99967 2.33268L7.14657 2.33693Z" fill="#6B7280"/>
+                                              </svg>
+                                              
+                                      </i>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-2 col-md-2 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>Country Code<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <select class="form-control">
+                                          <option>+1</option>
+                                      </select>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-5 col-md-12 px-2">
+                              <div class="mdlform form-group usrtblesearch position-relative mb-3">
+                                  <label>Phone<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <input type="text" placeholder="10 digit phone number" class="form-control" name="phone" [(ngModel)]="eLeaderReq.phone" required  minlength="10" maxlength="10"/>
+                                      <i><svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M1.48816 0.988155C1.17559 1.30072 1 1.72464 1 2.16667V3C1 9.90333 6.59667 15.5 13.5 15.5H14.3333C14.7754 15.5 15.1993 15.3244 15.5118 15.0118C15.8244 14.6993 16 14.2754 16 13.8333V11.1008C16 10.9259 15.945 10.7553 15.8427 10.6134C15.7404 10.4714 15.596 10.3653 15.43 10.31L11.6858 9.06167C11.4956 8.99841 11.2888 9.0059 11.1036 9.08274C10.9184 9.15958 10.7671 9.30062 10.6775 9.48L9.73583 11.3608C7.69538 10.4389 6.0611 8.80462 5.13917 6.76417L7.02 5.8225C7.19938 5.73288 7.34042 5.58158 7.41726 5.39637C7.4941 5.21116 7.50158 5.00445 7.43833 4.81417L6.19 1.07C6.13475 0.90413 6.02874 0.759836 5.88696 0.657542C5.74519 0.555247 5.57483 0.500133 5.4 0.5H2.66667C2.22464 0.5 1.80072 0.675595 1.48816 0.988155Z" stroke="#6B7280" stroke-linecap="round" stroke-linejoin="round"/>
+                                          </svg>
+                                          </i>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-5 col-md-12 px-2">
+                              <div class="mdlform form-group usrtblesearch position-relative mb-3">
+                                  <label>Company Phone<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <input type="text" placeholder="Enter Company Number" class="form-control" name="companyPhone" [(ngModel)]="eLeaderReq.companyPhone" required  minlength="10" maxlength="10"/>
+                                      <i><svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M1.48816 0.988155C1.17559 1.30072 1 1.72464 1 2.16667V3C1 9.90333 6.59667 15.5 13.5 15.5H14.3333C14.7754 15.5 15.1993 15.3244 15.5118 15.0118C15.8244 14.6993 16 14.2754 16 13.8333V11.1008C16 10.9259 15.945 10.7553 15.8427 10.6134C15.7404 10.4714 15.596 10.3653 15.43 10.31L11.6858 9.06167C11.4956 8.99841 11.2888 9.0059 11.1036 9.08274C10.9184 9.15958 10.7671 9.30062 10.6775 9.48L9.73583 11.3608C7.69538 10.4389 6.0611 8.80462 5.13917 6.76417L7.02 5.8225C7.19938 5.73288 7.34042 5.58158 7.41726 5.39637C7.4941 5.21116 7.50158 5.00445 7.43833 4.81417L6.19 1.07C6.13475 0.90413 6.02874 0.759836 5.88696 0.657542C5.74519 0.555247 5.57483 0.500133 5.4 0.5H2.66667C2.22464 0.5 1.80072 0.675595 1.48816 0.988155Z" stroke="#6B7280" stroke-linecap="round" stroke-linejoin="round"/>
+                                          </svg>
+                                          </i>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-4 col-md-12 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>Role<sup>*</sup></label>
+                                  <div class="position-relative">
+                                      <select class="form-control" name="about" [(ngModel)]="eLeaderReq.roleId" required >
+                                        <!-- <option selected>Select Role</option> -->
+                                        <option [value]="role.id" *ngFor="let role of roles">{{role.name}}</option>
+                                      </select>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-4 col-md-12 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>Language Code
+                                    <sup>*</sup>
+                                  </label>
+                                  <div class="position-relative">
+                                      <select class="form-control">
+                                        <!-- <option>Select language Code</option> -->
+                                        <option selected>EN</option>
+                                      </select>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-4 col-md-12 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>Time Zone
+                                    <sup>*</sup>
+                                  </label>
+                                  <div class="position-relative">
+                                      <select class="form-control">
+                                        <!-- <option>Select language Code</option> -->
+                                        <option selected>USA (GMT-4)</option>
+                                      </select>
+                                  </div>
+                                </div>
+                          </div>
+                          <div class="col-lg-12 col-md-12 px-2">
+                              <div class="mdlform form-group position-relative mb-3">
+                                  <label>About Info<sup>*</sup></label>
+                                  <textarea class="form-control" name="about" [(ngModel)]="eLeaderReq.about" required  minlength="5" maxlength="155"></textarea>
+                                </div>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn primarycancelbtn" #closeLeaderModel data-bs-dismiss="modal" (click)="closeCreateModel()">Cancel</button>
+                <!-- <button type="submit" class="btn primarybtn" (click)="createLeader()">create</button> -->
+                <button type="submit" class="btn primarybtn" [disabled]="savingUser" (click)="createLeader()">Create<i class="fa fa-spinner fa-spin" *ngIf="savingUser"></i></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+  
